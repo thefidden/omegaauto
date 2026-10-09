@@ -53,6 +53,13 @@ const goToCarList = (brand: string) => {
 							<div class="image-frame">
 								<img :src="getBrandLogoHref(brand)" :alt="`${brand} logo`" />
 							</div>
+
+							<div class="brand-logo__blurred__container">
+								<img class="brand-logo__blurred__img"
+									 :src="getBrandLogoHref(brand)"
+									 :alt="`${brand} logo`"
+								/>
+							</div>
 						</block-glass-button>
 					</div>
 				</Transition>
@@ -224,6 +231,34 @@ const goToCarList = (brand: string) => {
 	text-align: center;
 
 	user-select: none;
+}
+
+.brand-logo__blurred__container {
+	position: absolute;
+
+	top: 0;
+	left: 0;
+
+	width: 100%;
+	height: 100%;
+
+	box-sizing: border-box;
+	border-radius: inherit;
+
+	overflow: hidden;
+}
+
+.brand-logo__blurred__img {
+	position: absolute;
+
+	filter: blur(2px);
+	opacity: 0;
+	scale: 3;
+
+	top: 50%;
+	right: 0;
+
+	translate: 0 -50%;
 }
 
 @media (max-width: 1100px) {
