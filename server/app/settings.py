@@ -73,6 +73,7 @@ STORAGES = {
 INSTALLED_APPS = [
     'daphne',
     'corsheaders',
+    'django_filters',
     'rest_framework',
     'storages',
     'cars',

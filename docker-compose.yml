@@ -20,6 +20,22 @@ services:
       python manage.py collectstatic --noinput &&
       daphne -b 0.0.0.0 -p 8001 app.asgi:application"
 
+  telegram-bot:
+    build:
+      context: ./server
+    env_file:
+      - ./server/.env
+    environment:
+      DATABASE_HOST: ${DOCKER_DATABASE_HOST:-host.docker.internal}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./server/media:/app/media
+    depends_on:
+      - server
+    restart: unless-stopped
+    command: [ "python", "manage.py", "run_telegram_bot" ]
+
   client:
     build:
       context: ./client
