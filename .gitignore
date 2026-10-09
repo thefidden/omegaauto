@@ -15,7 +15,6 @@ server/venv/
 
 # Django local and generated files
 server/db.sqlite3
-server/media/
 server/staticfiles/
 
 # Node.js
