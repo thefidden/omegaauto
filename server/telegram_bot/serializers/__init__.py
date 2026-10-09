@@ -1,2 +1,0 @@
-from .TelegramCarCardWriteSerializer import TelegramCarCardWriteSerializer
-from .TelegramCarCardReadSerializer import TelegramCarCardReadSerializer

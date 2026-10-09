@@ -1,6 +1,5 @@
 import os
 
-from app.settings import MEDIA_ROOT
 from cars.models import CarImage
 
 
