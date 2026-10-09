@@ -10,7 +10,7 @@ from cars.serializers import BrandSerializer
 class BrandViewSet(viewsets.ModelViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = BrandFilter
 
     def get_permissions(self):

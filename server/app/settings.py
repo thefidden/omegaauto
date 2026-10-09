@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').strip().lower() in {'1', 'true', 'yes', 'on'}
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'omegaauto.org', 'backend.omegaauto.org']
 
 # Development origins used by the Vite frontend.
 CORS_ALLOWED_ORIGINS = [
@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'storages',
     'cars',
+    'telegram_bot',
     'django_daisy',
     'django.contrib.admin',
     'django.contrib.humanize',
@@ -177,10 +178,14 @@ AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 AWS_STORAGE_BUCKET_NAME = 'omegaauto'
-AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL', 'https://omegaautogroup.org')
+AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL', 'https://storage.omegaauto.org')
 
 AWS_S3_REGION_NAME = 'us-east-1'
 AWS_S3_ADDRESSING_STYLE = 'path'
 
 AWS_DEFAULT_ACL = None
 AWS_QUERYSTRING_AUTH = True
+
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+TELEGRAM_GROUP_ID = os.getenv('TELEGRAM_GROUP_ID')
+TELEGRAM_SUPERUSER_ID = os.getenv('TELEGRAM_SUPERUSER_ID')

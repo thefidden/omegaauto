@@ -1,12 +1,15 @@
 from rest_framework import serializers
 
 from telegram_bot.models import TelegramCarCard
-from cars.models import Car
 
-class TelegramCarCardWriteSerializer(serializers.ModelSerializer):
-    car = serializers.PrimaryKeyRelatedField(queryset = Car.objects.all())
+
+class TelegramCarCardReadSerializer(serializers.ModelSerializer):
+    car = serializers.SerializerMethodField()
     link = serializers.CharField(max_length = 100)
 
     class Meta:
         model = TelegramCarCard
-        fields = ('car', 'link')
+        fields = ('id', 'car', 'link')
+
+    def get_car(self, obj: TelegramCarCard):
+        return f'{obj.car.brand} {obj.car.model}'

@@ -9,12 +9,12 @@ from cars.serializers import GearSerializer
 class GearViewSet(viewsets.ModelViewSet):
     queryset = Gear.objects.all()
     serializer_class = GearSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
 
     def get_permissions(self):
         admin_actions = {'create', 'update', 'partial_update', 'destroy'}
 
         if self.action in admin_actions:
-            return [IsAdminUser()]
+            return (IsAdminUser(),)
 
-        return [AllowAny()]
+        return (AllowAny(),)

@@ -4,5 +4,6 @@ from .FuelSerializer import FuelSerializer
 from .ColorSerializer import ColorSerializer
 from .BrandSerializer import BrandSerializer
 from .CarStatusSerializer import CarStatusSerializer
-from .CarSerializer import CarSerializer
+from .CarReadSerializer import CarReadSerializer
+from .CarWriteSerializer import CarWriteSerializer
 from .ClientCarSerializer import ClientCarSerializer

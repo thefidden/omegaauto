@@ -101,6 +101,8 @@ defineExpose({ open })
 	border: 0;
 
 	cursor: pointer;
+
+	transition: opacity .3s ease-out;
 }
 
 .company-info__close span {

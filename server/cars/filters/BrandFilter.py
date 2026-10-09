@@ -14,4 +14,4 @@ class BrandFilter(django_filters.FilterSet):
 
     class Meta:
         model = Brand
-        fields = ['only_available']
+        fields = ('only_available',)

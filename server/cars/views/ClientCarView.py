@@ -13,9 +13,9 @@ class ClientCarViewSet(viewsets.ModelViewSet):
         queryset = Car.objects.select_related('brand', 'fuel', 'gear', 'color', 'status').prefetch_related('images')
     ).qs
 
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = CarFilter
 
     serializer_class = ClientCarSerializer
-    permission_classes = [AllowAny]
-    http_method_names = ['get']
+    permission_classes = (AllowAny,)
+    http_method_names = ('get',)

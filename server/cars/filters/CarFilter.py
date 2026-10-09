@@ -35,7 +35,7 @@ class CarFilter(django_filters.FilterSet):
 
     class Meta:
         model = Car
-        fields = [
+        fields = (
             'brand',
             'model',
             'fuel',
@@ -51,7 +51,7 @@ class CarFilter(django_filters.FilterSet):
             'displacement_max',
             'price_min',
             'price_max',
-        ]
+        )
 
     def filter_only_available(self, queryset, name, value):
         if value is True:

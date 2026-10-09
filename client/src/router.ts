@@ -6,18 +6,34 @@ import { storeToRefs } from "pinia";
 import { useStore } from "./stores/Store.ts";
 import { useCarListFilterSet } from "./stores/CarListFilterSet.ts";
 import { watch } from "vue";
+import { smoothScrollTo } from "./utils/smoothScroll.ts";
 
-export default createRouter({
+type PendingScroll = {
+    left: number
+    top: number
+} | {
+    hash: string
+}
+
+let pendingScroll: PendingScroll | null = null
+
+export function takePendingScroll() {
+    const scroll = pendingScroll
+    pendingScroll = null
+    return scroll
+}
+
+const router = createRouter({
     history: createWebHistory(),
 
     scrollBehavior(to, from, savedPosition) {
-        if (savedPosition)
-            return savedPosition
+        pendingScroll = savedPosition
+            ? { left: savedPosition.left, top: savedPosition.top }
+            : to.hash
+                ? { hash: to.hash }
+                : { left: 0, top: 0 }
 
-        if (to.hash)
-            return { el: to.hash, behavior: 'smooth' }
-
-        return { top: 0 }
+        return false
     },
 
     routes: [
@@ -26,7 +42,7 @@ export default createRouter({
             component: MainView,
             name: 'main',
             beforeEnter: async(route: RouteLocationNormalized) => {
-                document.title = 'Omega Auto Group'
+                document.title = 'Omega Auto'
             }
         },
 
@@ -66,3 +82,10 @@ export default createRouter({
         }
     ]
 })
+
+router.beforeEach(async (to, from) => {
+    if (from.name && to.path !== from.path)
+        await smoothScrollTo(window.scrollX, 0)
+})
+
+export default router

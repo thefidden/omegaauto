@@ -11,7 +11,7 @@ class Car(models.Model):
     year = models.PositiveSmallIntegerField(verbose_name = 'Год выпуска')
     mileage = models.PositiveIntegerField(verbose_name = 'Пробег')
     power = models.PositiveIntegerField(verbose_name = 'Мощность, л.с.')
-    displacement = models.DecimalField(max_digits = 4, decimal_places = 1, verbose_name = 'Объем двигателя')
+    displacement = models.DecimalField(max_digits = 2, decimal_places = 1, verbose_name = 'Объем двигателя')
     vin = models.CharField(max_length = 20, verbose_name = 'VIN-номер', blank = True)
     price = models.PositiveIntegerField(verbose_name = 'Стоимость')
 

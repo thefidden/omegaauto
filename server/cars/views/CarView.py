@@ -4,13 +4,20 @@ from rest_framework.permissions import IsAdminUser
 
 from cars.filters import CarFilter
 from cars.models import Car
-from cars.serializers import CarSerializer
+from cars.serializers import CarReadSerializer, CarWriteSerializer
 
 
 class CarViewSet(viewsets.ModelViewSet):
     queryset = Car.objects.select_related('brand', 'fuel', 'gear', 'color', 'status').prefetch_related('images')
-    serializer_class = CarSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = CarFilter
-    permission_classes = [IsAdminUser]
+    permission_classes = (IsAdminUser,)
 
+    def get_serializer_class(self):
+        if self.action in ('create', 'update', 'partial_update'):
+            return CarWriteSerializer
+
+        if self.action in ('list', 'retrieve'):
+            return CarReadSerializer
+
+        return CarReadSerializer

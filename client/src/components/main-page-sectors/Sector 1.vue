@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import chinaFlag from "../../assets/china.svg";
-import russiaFlag from "../../assets/russia.svg";
+import chinaMap from "../../assets/china-map.svg";
+import russiaMap from "../../assets/russia-map.svg";
 import lineGradient from "../../assets/line-gradient.svg";
 import carSideView from "../../assets/car-side-view.png";
 import BlockGlass from "../BlockGlass.vue";
@@ -20,11 +20,11 @@ const goToBrandSelection = () => {
 
         <div class="grid">
             <block-glass class="china" style="--background-color: var(--color-secondary-7)">
-                <img :src="chinaFlag" alt="China" class="flag"/>
+                <img :src="chinaMap" alt="China" class="flag"/>
             </block-glass>
 
             <block-glass class="russia" style="--background-color: var(--color-secondary-7)">
-                <img :src="russiaFlag" alt="Russia" class="flag"/>
+                <img :src="russiaMap" alt="Russia" class="flag"/>
             </block-glass>
 
             <block-glass class="import" style="--background-color: var(--color-secondary-7)">

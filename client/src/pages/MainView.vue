@@ -7,7 +7,7 @@ import Sector4 from "../components/main-page-sectors/Sector 4.vue"
 </script>
 
 <template>
-    <div class="mainPage">
+    <div class="mainPage main-page__fade-in">
         <sector-1/>
         <sector-2/>
         <sector-3/>
@@ -45,4 +45,16 @@ import Sector4 from "../components/main-page-sectors/Sector 4.vue"
     }
 }
 
+.main-page__fade-in {
+	animation: .5s MainPageFadeIn .3s ease-out backwards;
+}
+
+@keyframes MainPageFadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
 </style>
