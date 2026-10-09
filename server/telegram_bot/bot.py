@@ -50,16 +50,26 @@ async def start(message: Message):
 
     markup.add(open_web_app_button)
 
-    if message.from_user.id == superuser_id:
+    if message.from_user and message.from_user.id == superuser_id:
         markup.add(parse_emoji_button)
 
-    with GREETING_IMAGE.open('rb') as photo:
-        await bot.send_photo(
-            chat_id = message.chat.id,
-            caption = GREETING,
-            photo = photo,
-            parse_mode = 'HTML'
-        )
+    if GREETING_IMAGE.is_file():
+        with GREETING_IMAGE.open('rb') as photo:
+            await bot.send_photo(
+                chat_id = message.chat.id,
+                caption = GREETING,
+                photo = photo,
+                parse_mode = 'HTML',
+                reply_markup = markup
+            )
+        return
+
+    await bot.send_message(
+        chat_id = message.chat.id,
+        text = GREETING,
+        parse_mode = 'HTML',
+        reply_markup = markup
+    )
 
 
 def get_entity_text(text: str, entity: MessageEntity) -> str:
