@@ -39,6 +39,6 @@ docker-compose.*.yml
 
 # other
 bruno-collection
-cars
+/cars/
 emoji-pack
 nginx
