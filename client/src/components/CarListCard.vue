@@ -80,7 +80,18 @@ const getBrandLogoHref = (brand: string): string => {
 
 	right: 0;
 	bottom: 0;
-	translate: 25% 25%;
+	transform: translateX(25%) translateY(25%);
+	transform-origin: right bottom;
+
+	transition: filter .3s ease-out;
+}
+
+.card:hover .brand-logo__img {
+	filter: blur(10px);
+}
+
+.card:hover .image-frame img {
+	scale: 1.1;
 }
 
 .card {
@@ -109,6 +120,8 @@ const getBrandLogoHref = (brand: string): string => {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+
+	transition: scale .3s ease-out;
 }
 
 .info {
