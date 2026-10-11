@@ -11,7 +11,7 @@ const socials = [
     { name: 'ВКонтакте', href: 'https://vk.ru/omegaautogroup', icon: VkIcon }
 ]
 
-const phones = ['+7 (932) 301-89-98', "+7 (922) 700-90-90"]
+const phones = ['+7 (932) 301-89-98', "+7 (902) 602-22-77", "+7 (922) 700-90-90"]
 
 const goToSocial = (url: string) => { window.open(url, '_blank') }
 const getPhoneHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`
@@ -64,8 +64,7 @@ const callPhone = (phone: string) => { window.location.href = getPhoneHref(phone
         "socials picture"
         "phones picture";
     grid-template-columns: 1fr 2fr;
-    grid-template-rows: 1fr 1fr;
-    grid-gap: 100px;
+    grid-gap: 50px;
 
     width: 100%;
 }
@@ -99,11 +98,18 @@ const callPhone = (phone: string) => { window.location.href = getPhoneHref(phone
     grid-area: phones;
 }
 
-.socials, .phones {
+.socials {
     display: grid;
-    grid-template-rows: 2fr 1fr 1fr;
+    grid-template-rows: 2fr repeat(2, 1fr);
     grid-template-columns: 1fr;
     grid-gap: 20px;
+}
+
+.phones {
+	display: grid;
+	grid-template-rows: 2fr repeat(3, 1fr);
+	grid-template-columns: 1fr;
+	grid-gap: 20px;
 }
 
 .picture {
