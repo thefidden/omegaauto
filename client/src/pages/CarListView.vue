@@ -22,7 +22,7 @@ const { brand } = storeToRefs(carListFilterSet)
 
 const carsPerPage = 10
 const carListPage = ref(0)
-const carListPages = computed(() => Math.max(1, Math.ceil(cars.value.length / carsPerPage)))
+const carListPages = computed(() => Math.floor(cars.value.length / carsPerPage) + 1)
 
 watch(brand, () => carListPage.value = 0)
 

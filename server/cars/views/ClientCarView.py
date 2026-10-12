@@ -10,7 +10,13 @@ from cars.serializers import ClientCarSerializer
 class ClientCarViewSet(viewsets.ModelViewSet):
     queryset = CarFilter(
         data = { 'only_available': True },
-        queryset = Car.objects.select_related('brand', 'fuel', 'gear', 'color', 'status').prefetch_related('images')
+        queryset = (
+            Car
+            .objects
+            .select_related('brand', 'fuel', 'gear', 'color', 'status')
+            .prefetch_related('images')
+            .order_by('-created_at')
+        )
     ).qs
 
     filter_backends = (DjangoFilterBackend,)
