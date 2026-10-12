@@ -61,7 +61,7 @@ const pageList = computed(() => {
 </script>
 
 <template>
-	<Transition name="footer__transition" mode="out-in">
+	<Transition name="footer__transition" mode="out-in" appear>
 		<block-glass class="footer"
 					 :class="{ 'above-pagination': route.name === 'car-list' }"
 					 :key="pageList.map(page => page.href).join(' | ')"
