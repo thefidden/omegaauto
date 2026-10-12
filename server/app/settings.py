@@ -36,7 +36,15 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5174',
 ]
 
-CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+CSRF_TRUSTED_ORIGINS = [
+    *CORS_ALLOWED_ORIGINS,
+    'https://omegaauto.org',
+    'https://www.omegaauto.org',
+    'https://backend.omegaauto.org',
+]
+
+# Nginx terminates TLS and forwards X-Forwarded-Proto.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
