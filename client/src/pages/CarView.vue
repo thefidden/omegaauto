@@ -1,16 +1,21 @@
 <script setup lang="ts">
 
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import BlockGlass from "../components/BlockGlass.vue";
 
 import { storeToRefs } from "pinia";
 import BlockGlassButton from "../components/BlockGlassButton.vue";
 import LoadingAnimation from "../components/LoadingAnimation.vue";
+import TextIconButton from "../components/TextIconButton.vue";
 import TelegramIcon from "../assets/telegram.svg";
 import VkIcon from "../assets/vk.svg";
 import PhoneIcon from "../assets/phone.svg";
+import ArrowIcon from "../assets/arrow.svg";
 import { useStore } from "../stores/Store.ts";
+import { useRouter } from "vue-router";
+
+const router = useRouter()
 
 const store = useStore()
 const { car, carLoading } = storeToRefs(store)
@@ -19,29 +24,33 @@ const socials = [
 	{ name: 'Telegram', href: 'https://t.me/omegaautogroup?direct', icon: TelegramIcon },
 	{ name: 'ВКонтакте', href: 'https://vk.me/omegaautogroup', icon: VkIcon }
 ]
-
-const phones = ['+7 (932) 301-89-98', "+7 (922) 700-90-90"]
-
+const phones = [
+	{ label: '+7 (932) 301-89-98', href: 'tel:+79323018998' },
+	{ label: '+7 (902) 602-22-77', href: 'tel:+79026022277' },
+	{ label: '+7 (922) 700-90-90', href: 'tel:+79227009090' },
+]
 const currentImageIndex = ref(0)
 
-const goToSocial = (url: string) => {
-	window.open(url, '_blank')
-}
-const getPhoneHref = (phone: string) => `tel:${ phone.replace(/[^\d+]/g, '') }`
-const callPhone = (phone: string) => {
-	window.location.href = getPhoneHref(phone)
-}
+const goBack = () => router.back()
 const numberFormatted = (n: number) => new Intl.NumberFormat("ru-RU").format(Number(n))
-const showPreviousImage = () => {
-	const imageCount = car.value?.images?.length ?? 0
-	if (!imageCount) return
-	currentImageIndex.value = (currentImageIndex.value - 1 + imageCount) % imageCount
+
+const shiftImage = (delta: number) => {
+	const imagesCount = car.value?.images?.length ?? 0
+	if (!imagesCount) return
+	currentImageIndex.value = (currentImageIndex.value + delta + imagesCount) % imagesCount
 }
-const showNextImage = () => {
-	const imageCount = car.value?.images?.length ?? 0
-	if (!imageCount) return
-	currentImageIndex.value = (currentImageIndex.value + 1) % imageCount
-}
+
+const carSpecs = computed(() => [
+	{ key: 'name', label: '', value: `${ car.value?.brand } ${ car.value?.model }` },
+	{ key: 'year', label: 'Год', value: car.value?.year },
+	{ key: 'mileage', label: 'Пробег', value: `${ numberFormatted(car.value?.mileage || 0) } км` },
+	{ key: 'power', label: 'Мощность', value: `${ car.value?.power } л.с.` },
+	{ key: 'displacement', label: 'Объем', value: `${ car.value?.displacement } л` },
+	{ key: 'gear', label: 'Трансмиссия', value: car.value?.gear },
+	{ key: 'color', label: 'Цвет', value: car.value?.color },
+	{ key: 'fuel', label: 'Топливо', value: car.value?.fuel },
+	{ key: 'price', label: '', value: `${ numberFormatted(car.value?.price || 0) } ¥` },
+])
 </script>
 
 <template>
@@ -49,6 +58,10 @@ const showNextImage = () => {
 
 	<template v-else>
 		<div class="carPage">
+			<TextIconButton class="button__go-back" :icon="ArrowIcon" icon-alt="Arrow" @click="goBack">
+				Назад
+			</TextIconButton>
+
 			<div class="card">
 				<div class="image-frame image-animation" style="grid-area: image">
 					<Transition name="image-frame__background__transition" mode="out-in">
@@ -69,12 +82,12 @@ const showNextImage = () => {
 					</Transition>
 
 					<block-glass-button class="gallery-arrow gallery-arrow-left" type="button"
-										aria-label="Предыдущее изображение" @click="showPreviousImage">
+										aria-label="Предыдущее изображение" @click="shiftImage(-1)">
 						&#10094;
 					</block-glass-button>
 
 					<block-glass-button class="gallery-arrow gallery-arrow-right" type="button"
-										aria-label="Следующее изображение" @click="showNextImage">
+										aria-label="Следующее изображение" @click="shiftImage(1)">
 						&#10095;
 					</block-glass-button>
 				</div>
@@ -82,45 +95,15 @@ const showNextImage = () => {
 				<block-glass class="info right-block-slide-in-animation"
 							 style="grid-area: info; animation-delay: .2s"
 				>
-					<text class="name" style="grid-area: name"><b>{{ car?.brand + ' ' + car?.model }}</b></text>
-
-					<text class="year" style="grid-area: year">
-						<span><b>Год</b></span>
-						<span>{{ car?.year }}</span>
-					</text>
-
-					<text class="mileage" style="grid-area: mileage">
-						<span><b>Пробег</b></span>
-						<span>{{ numberFormatted(car?.mileage || 0) }} км</span>
-					</text>
-
-					<text class="power" style="grid-area: power">
-						<span><b>Мощность</b></span>
-						<span>{{ car?.power }} л.с.</span>
-					</text>
-
-					<text class="displacement" style="grid-area: displacement">
-						<span><b>Объем</b></span>
-						<span>{{ car?.displacement }} л</span>
-					</text>
-
-					<text class="gear" style="grid-area: gear">
-						<span><b>Коробка</b></span>
-						<span>{{ car?.gear }}</span>
-					</text>
-
-					<text class="color" style="grid-area: color">
-						<span><b>Цвет</b></span>
-						<span>{{ car?.color }}</span>
-					</text>
-
-					<text class="fuel" style="grid-area: fuel">
-						<span><b>Топливо</b></span>
-						<span>{{ car?.fuel }}</span>
-					</text>
-
-					<text class="price" style="grid-area: price">
-						<span><b>{{ numberFormatted(car?.price || 0) }} ¥</b></span>
+					<text
+						v-for="carSpec in carSpecs"
+						:key="carSpec.key"
+						:class="carSpec.key"
+						:style="{ gridArea: carSpec.key }"
+					>
+						<span v-if="carSpec.label"><b>{{ carSpec.label }}</b></span>
+						<span v-if="carSpec.label">{{ carSpec.value }}</span>
+						<span v-else><b>{{ carSpec.value }}</b></span>
 					</text>
 				</block-glass>
 
@@ -148,16 +131,31 @@ const showNextImage = () => {
 					</text>
 
 					<div class="buttons" style="grid-area: buttons">
-						<button v-for="social in socials" :key="social.name" type="button"
-								@click="goToSocial(social.href)">
-							<img :src="social.icon" :alt="social.name" />
-							<span>{{ social.name }}</span>
-						</button>
+						<div class="buttons__socials">
+							<TextIconButton
+								v-for="social in socials"
+								:key="social.name"
+								:icon="social.icon"
+								:icon-alt="social.name"
+								:href="social.href"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								{{ social.name }}
+							</TextIconButton>
+						</div>
 
-						<button v-for="phone in phones" :key="phone" type="button" @click="callPhone(phone)">
-							<img :src="PhoneIcon" alt="Phone" />
-							<span>{{ phone }}</span>
-						</button>
+						<div class="buttons__phones">
+							<TextIconButton
+								v-for="phone in phones"
+								:key="phone.label"
+								:icon="PhoneIcon"
+								icon-alt="Phone"
+								:href="phone.href"
+							>
+								{{ phone.label }}
+							</TextIconButton>
+						</div>
 					</div>
 				</block-glass>
 			</div>
@@ -174,7 +172,7 @@ const showNextImage = () => {
 
 	box-sizing: border-box;
 	padding: 120px 0;
-	gap: 100px;
+	gap: 20px;
 }
 
 .card {
@@ -361,52 +359,17 @@ const showNextImage = () => {
 }
 
 .links .buttons {
-	display: grid;
-	grid-template-columns: 2fr 3fr;
-	grid-template-rows: repeat(2, 1fr);
-	grid-gap: 10px;
-	grid-auto-flow: column;
-
-	width: 100%;
-}
-
-.links button {
-	all: unset;
-
-	position: relative;
 	display: flex;
-	align-items: center;
-
-	box-sizing: border-box;
-	padding: 0 35px;
-
-	font-size: 16px;
-	font-weight: 400;
-	line-height: 1.25;
+	flex-direction: row;
 
 	width: 100%;
-	cursor: pointer;
-
-	img {
-		position: absolute;
-		height: 15px;
-
-		left: 0;
-		top: 50%;
-
-		transform: translateY(-50%);
-	}
-
-	span {
-		display: block;
-		will-change: transform, color;
-		transition: transform 0.3s ease-out, color 0.3s ease-out;
-	}
 }
 
-.links button:hover span {
-	color: rgba(255, 255, 255, 0.9);
-	transform: translateY(-10%);
+.buttons .buttons__phones,
+.buttons .buttons__socials {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
 }
 
 @media (max-width: 1180px) {
@@ -446,6 +409,11 @@ const showNextImage = () => {
 	}
 
 	.links { width: 100%; }
+
+	.buttons .buttons__phones,
+	.buttons .buttons__socials {
+		gap: 10px;
+	}
 }
 
 @media (max-width: 700px) {
@@ -495,9 +463,9 @@ const showNextImage = () => {
 		grid-auto-flow: row;
 	}
 
-	.links button {
-		min-height: 44px;
-		font-size: 14px;
+	.buttons .buttons__phones,
+	.buttons .buttons__socials {
+		gap: 8px;
 	}
 }
 
@@ -505,6 +473,11 @@ const showNextImage = () => {
 	.links .buttons {
 		grid-template-columns: minmax(0, 1fr);
 		grid-template-rows: repeat(4, 44px);
+	}
+
+	.buttons .buttons__phones,
+	.buttons .buttons__socials {
+		gap: 6px;
 	}
 }
 

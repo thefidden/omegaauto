@@ -10,6 +10,7 @@ import BlockGlassButton from "../components/BlockGlassButton.vue";
 import LoadingAnimation from "../components/LoadingAnimation.vue";
 import { useStore } from "../stores/Store.ts";
 import { useCarListFilterSet } from "../stores/CarListFilterSet.ts";
+import TextIconButton from "../components/TextIconButton.vue";
 
 
 const router = useRouter()
@@ -24,16 +25,10 @@ const carsPerPage = 10
 const carListPage = ref(0)
 const carListPages = computed(() => Math.max(1, Math.ceil(cars.value.length / carsPerPage)))
 
-watch(brand, () => {
-	carListPage.value = 0
-})
+watch(brand, () => carListPage.value = 0)
 
-const goToCar = (id: string) => {
-	router.push({
-		name: 'car',
-		params: { id }
-	})
-}
+const goBack = () => router.push({ name: 'main', hash: '#brand-selection' })
+const goToCar = (id: string) => router.push({ name: 'car', params: { id } })
 
 const getBrandLogoHref = (brand: string): string => {
 	const extension = brand.toLowerCase() === "great wall" ? "png" : "svg"
@@ -47,7 +42,7 @@ const getBrandLogoHref = (brand: string): string => {
 	<template v-else>
 		<div class="carListPage">
 			<block-glass class="cell heading cell-heading-animation"
-			             style="--background-color: var(--color-secondary-7)">
+						 style="--background-color: var(--color-secondary-7)">
 				<text>
 					<span>Автомобили</span>
 					<span><b>{{ brand }}</b></span>
@@ -57,6 +52,10 @@ const getBrandLogoHref = (brand: string): string => {
 			</block-glass>
 
 			<div class="list">
+				<TextIconButton class="button__go-back" :icon="Arrow" :icon-alt="Arrow" @click="goBack()">
+					Назад
+				</TextIconButton>
+
 				<car-list-card class="car-list-card-animation"
 							   v-for="(car, index) in cars.slice(carListPage * carsPerPage, (carListPage + 1) * carsPerPage)"
 							   :key="car.id"
