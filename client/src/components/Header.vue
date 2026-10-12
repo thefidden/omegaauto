@@ -29,16 +29,12 @@ const pages: Page[] = [
 	{
 		name: 'Главная',
 		icon: HomeIcon,
-		action: () => {
-			router.push({ name: 'main' })
-		}
+		action: () => router.push({ name: 'main' })
 	},
 	{
 		name: 'Каталог',
 		icon: CarIcon,
-		action: () => {
-			router.push({ name: 'main', hash: '#brand-selection' })
-		}
+		action: () => router.push({ name: 'main', hash: '#brand-selection' })
 	},
 	{
 		name: 'О нас',
@@ -60,7 +56,7 @@ const menuOpen = ref(false)
 	<block-glass class="header"
 				 style="background-color: var(--color-primary-30)"
 				 @keydown.esc="menuOpen = false">
-		<span class="omega-auto">OMEGA AUTO</span>
+		<span class="omega-auto" @click="router.push({name: 'main'})">OMEGA AUTO</span>
 
 		<div class="header-sector pages">
 			<button-shifting-text-with-icon
@@ -164,6 +160,7 @@ const menuOpen = ref(false)
 	font-size: 20px;
 	font-weight: 700;
 	color: rgba(255, 255, 255, 1);
+	cursor: pointer;
 }
 
 .header-sector {
