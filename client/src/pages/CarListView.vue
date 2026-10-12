@@ -79,8 +79,8 @@ const getBrandLogoHref = (brand: string): string => {
 			</div>
 		</div>
 
-		<div class="navigation">
-			<block-glass-button class="button prev car-list-pages-animation"
+		<div class="car-list__navigation car-list__navigation__animation">
+			<block-glass-button class="button prev"
 								@click="carListPage = Math.max(0, carListPage - 1)"
 								:style="{
 									borderRadius: 100,
@@ -91,16 +91,16 @@ const getBrandLogoHref = (brand: string): string => {
 				<img :src="Arrow" alt="Arrow" />
 			</block-glass-button>
 
-			<block-glass class="page car-list-pages-animation">
+			<block-glass class="page">
 				Страница {{ carListPage + 1 }} из {{ carListPages }}
 			</block-glass>
 
-			<block-glass-button class="button next car-list-pages-animation"
+			<block-glass-button class="button next"
 								@click="carListPage = Math.min(carListPage + 1, carListPages - 1)"
 								:style="{
 									borderRadius: 100,
-									cursor: carListPage <= carListPages - 1 ? 'not-allowed' : 'pointer',
-									opacity: carListPage <= carListPages - 1 ? '.5' : '1'
+									cursor: carListPage >= carListPages - 1 ? 'not-allowed' : 'pointer',
+									opacity: carListPage >= carListPages - 1 ? '.5' : '1'
 								}"
 			>
 				<img :src="Arrow" alt="Arrow" />
@@ -110,7 +110,7 @@ const getBrandLogoHref = (brand: string): string => {
 </template>
 
 <style scoped>
-.navigation {
+.car-list__navigation {
 	display: flex;
 	flex-direction: row;
 	gap: 30px;
@@ -123,7 +123,7 @@ const getBrandLogoHref = (brand: string): string => {
 	z-index: 20;
 }
 
-.navigation .button {
+.car-list__navigation .button {
 	flex: 0 0 60px;
 	width: 60px;
 	height: 100%;
@@ -134,18 +134,18 @@ const getBrandLogoHref = (brand: string): string => {
 	padding: 10px;
 }
 
-.navigation .button img {
+.car-list__navigation .button :deep(img) {
 	display: block;
 	width: 60%;
 	height: 60%;
 	object-fit: contain;
 }
 
-.navigation .button.next img {
+.car-list__navigation .button.next :deep(img) {
 	rotate: 180deg;
 }
 
-.navigation .page {
+.car-list__navigation .page {
 	font-size: 20px;
 	font-weight: 300;
 	color: rgba(255, 255, 255, 0.7);
@@ -219,13 +219,13 @@ const getBrandLogoHref = (brand: string): string => {
 		padding-bottom: 170px;
 	}
 
-	.navigation {
+	.car-list__navigation {
 		right: 24px;
 		bottom: 24px;
 		gap: 16px;
 	}
 
-	.navigation .page { padding-inline: 28px; }
+	.car-list__navigation .page { padding-inline: 28px; }
 }
 
 @media (max-width: 700px) {
@@ -245,20 +245,20 @@ const getBrandLogoHref = (brand: string): string => {
 
 	.list { width: 100%; gap: 16px; }
 
-	.navigation {
+	.car-list__navigation {
 		right: 16px;
 		bottom: 16px;
 		height: 48px;
 		gap: 8px;
 	}
 
-	.navigation .button {
+	.car-list__navigation .button {
 		flex-basis: 48px;
 		width: 48px;
 		padding: 12px;
 	}
 
-	.navigation .page {
+	.car-list__navigation .page {
 		padding: 0 16px;
 		font-size: 14px;
 	}
@@ -267,7 +267,7 @@ const getBrandLogoHref = (brand: string): string => {
 @media (max-width: 900px) {
 	.carListPage { padding-bottom: 32px; }
 
-	.navigation {
+	.car-list__navigation {
 		position: relative;
 		right: auto;
 		bottom: auto;
@@ -288,7 +288,7 @@ const getBrandLogoHref = (brand: string): string => {
 	animation: .5s carListCardSlideIn ease-out forwards;
 }
 
-.car-list-pages-animation {
+.car-list__navigation__animation {
 	opacity: 0;
 	will-change: opacity, translate, filter;
 	animation: .5s carListPagesSlideIn ease-out .3s forwards;
