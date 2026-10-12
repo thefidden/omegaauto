@@ -85,7 +85,7 @@ watch(
 					</main>
 				</Transition>
 			</router-view>
-			<Navigation class="navigation-animation" />
+			<Navigation />
 		</div>
 
 		<Header class="header-animation" />
@@ -246,12 +246,6 @@ watch(
 	animation: .5s headerSlideIn ease-out .3s forwards;
 }
 
-.navigation-animation {
-	opacity: 0;
-	will-change: opacity, translate, filter;
-	animation: .5s NavigationSlideIn ease-out .3s forwards;
-}
-
 @keyframes ellipseFadeIn {
 	from {
 		opacity: 0;
@@ -267,19 +261,6 @@ watch(
 	from {
 		opacity: 0;
 		translate: 0 -5px;
-		filter: blur(10px);
-	}
-	to {
-		opacity: 1;
-		translate: 0 0;
-		filter: blur(0);
-	}
-}
-
-@keyframes NavigationSlideIn {
-	from {
-		opacity: 0;
-		translate: 0 5px;
 		filter: blur(10px);
 	}
 	to {

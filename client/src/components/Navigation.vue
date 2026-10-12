@@ -11,7 +11,7 @@ const route = useRoute()
 const router = useRouter()
 
 const pageList = computed(() => {
-	interface Page {
+	type Page = {
 		title: string,
 		href: string,
 		ascendant: string | null,
@@ -27,36 +27,25 @@ const pageList = computed(() => {
 			title: 'Главная страница',
 			href: '/',
 			ascendant: null,
-			action: () => router.push({
-				name: 'main'
-			})
+			action: () => router.push({ name: 'main' })
 		},
 		'all-brands': {
 			title: 'Все бренды',
 			href: '/#brand-selection',
 			ascendant: 'main',
-			action: () => router.push({
-				name: 'main',
-				hash: '#brand-selection'
-			})
+			action: () => router.push({ name: 'main', hash: '#brand-selection' })
 		},
 		'car-list': {
 			title: `Автомобили ${ brand }`,
 			href: `/cars/?brand=${ brand }`,
 			ascendant: 'all-brands',
-			action: () => router.push({
-				name: 'car-list',
-				query: { brand }
-			})
+			action: () => router.push({ name: 'car-list', query: { brand } })
 		},
 		'car': {
 			title: `Автомобиль ${ car.value?.brand } ${ car.value?.model }`.trim(),
 			href: `/cars/${ car.value?.id }`,
 			ascendant: 'car-list',
-			action: () => router.push({
-				name: 'car',
-				params: { id: car.value?.id }
-			})
+			action: () => router.push({ name: 'car', params: { id: car.value?.id } })
 		}
 	}
 
@@ -72,24 +61,48 @@ const pageList = computed(() => {
 </script>
 
 <template>
-	<block-glass class="footer"
-				 :class="{ 'above-pagination': route.name === 'car-list' }"
-				 style="background-color: var(--color-primary-30)">
-		<nav aria-label="Навигация по страницам">
-			<button-shifting-text-with-icon
-				v-for="page in pageList"
-				:key="page.href"
-				class="footer-page"
-				icon-alt=""
-				@click="page.action()"
-			>
-				{{ page.title }}
-			</button-shifting-text-with-icon>
-		</nav>
-	</block-glass>
+	<Transition name="footer__transition" mode="out-in">
+		<block-glass class="footer"
+					 :class="{ 'above-pagination': route.name === 'car-list' }"
+					 :key="pageList.map(page => page.href).join(' | ')"
+					 style="background-color: var(--color-primary-30)"
+		>
+			<nav aria-label="Навигация по страницам">
+				<button-shifting-text-with-icon
+					v-for="page in pageList"
+					:key="page.href"
+					class="footer-page"
+					icon-alt=""
+					@click="page.action()"
+				>
+					{{ page.title }}
+				</button-shifting-text-with-icon>
+			</nav>
+		</block-glass>
+	</Transition>
+
 </template>
 
 <style scoped>
+.footer__transition-enter-from,
+.footer__transition-leave-to {
+	opacity: 0;
+	filter: blur(10px);
+	translate: 0 10px;
+}
+
+.footer__transition-enter-to,
+.footer__transition-leave-from {
+	opacity: 1;
+	filter: blur(0);
+	translate: 0 0;
+}
+
+.footer__transition-enter-active,
+.footer__transition-leave-active {
+	transition: opacity .3s ease-out, filter .3s ease-out, translate .3s ease-out;
+}
+
 .footer {
 	position: fixed;
 	bottom: 30px;

@@ -12,7 +12,6 @@ import { useStore } from "../stores/Store.ts";
 import { useCarListFilterSet } from "../stores/CarListFilterSet.ts";
 import TextIconButton from "../components/TextIconButton.vue";
 
-
 const router = useRouter()
 
 const store = useStore()

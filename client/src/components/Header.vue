@@ -13,17 +13,8 @@ import CompanyInfo from "./CompanyInfo.vue";
 
 const router = useRouter()
 
-type Page = {
-	name: string,
-	icon: string,
-	action: () => void
-}
-
-type Social = {
-	name: string,
-	href: string,
-	icon: string
-}
+type Page = { name: string, icon: string, action: () => void }
+type Social = { name: string, href: string, icon: string }
 
 const pages: Page[] = [
 	{
@@ -260,6 +251,5 @@ const menuOpen = ref(false)
 		padding: 0 8px 0 36px;
 		color: var(--color-secondary-90);
 	}
-
 }
 </style>
