@@ -35,9 +35,9 @@
     border-radius: inherit;
 
     background-color: var(--background-color);
-    border: 1px solid var(--color-secondary-60);
+    border: 1px solid var(--color-secondary-50);
 
-    box-shadow: inset 0 0 10px 1px var(--color-secondary-60);
+    box-shadow: inset 0 0 10px 1px var(--color-secondary-50);
     mix-blend-mode: darken;
 
     pointer-events: none;
@@ -52,7 +52,7 @@
 
     border-radius: inherit;
 
-    box-shadow: 0 0 20px 1px #DEDCE480;
+    box-shadow: 0 0 20px 1px rgba(222, 220, 228, .4);
     mix-blend-mode: darken;
 
     pointer-events: none;

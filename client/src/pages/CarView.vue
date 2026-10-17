@@ -59,7 +59,7 @@ const carSpecs = computed(() => [
 	<template v-else>
 		<div class="carPage">
 			<TextIconButton class="button__go-back" :icon="ArrowIcon" icon-alt="Arrow" @click="goBack">
-				Назад
+				К списку автомобилей
 			</TextIconButton>
 
 			<div class="card">
@@ -370,6 +370,10 @@ const carSpecs = computed(() => [
 	display: flex;
 	flex-direction: column;
 	gap: 15px;
+}
+
+.info, .links {
+	background-color: var(--color-primary-30);
 }
 
 @media (max-width: 1180px) {

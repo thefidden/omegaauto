@@ -36,10 +36,10 @@ const pageList = computed(() => {
 			action: () => router.push({ name: 'main', hash: '#brand-selection' })
 		},
 		'car-list': {
-			title: `Автомобили ${ brand }`,
+			title: `Список автомобилей`,
 			href: `/cars/?brand=${ brand }`,
 			ascendant: 'all-brands',
-			action: () => router.push({ name: 'car-list', query: { brand } })
+			action: async () => router.back()
 		},
 		'car': {
 			title: `Автомобиль ${ car.value?.brand } ${ car.value?.model }`.trim(),
@@ -80,7 +80,6 @@ const pageList = computed(() => {
 			</nav>
 		</block-glass>
 	</Transition>
-
 </template>
 
 <style scoped>

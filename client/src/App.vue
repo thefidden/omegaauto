@@ -2,7 +2,6 @@
 
 import { nextTick, onMounted, watch } from "vue";
 import { useStore } from "./stores/Store.ts";
-import { useCarListFilterSet } from "./stores/CarListFilterSet.ts";
 import { storeToRefs } from "pinia";
 import Header from "./components/Header.vue";
 import Navigation from "./components/Navigation.vue";
@@ -12,20 +11,18 @@ import { smoothScrollTo } from "./utils/smoothScroll.ts";
 
 const store = useStore()
 const route = useRoute()
-const { fetchAvailableBrands, fetchCars, fetchCar } = store
+const { fetchAvailableBrands, fetchGears, fetchFuels, fetchColors, fetchCar } = store
 const { carID } = storeToRefs(store)
 
-const carListFilterSet = useCarListFilterSet()
-const { brand } = storeToRefs(carListFilterSet)
+async function scrollToHash(hash: string) {
+	if (!hash) return
 
-function scrollToHash(hash: string) {
-	if (!hash) return Promise.resolve()
-
+	await nextTick()
 	const target = document.getElementById(decodeURIComponent(hash.slice(1)))
-	if (!target) return Promise.resolve()
+	if (!target) return
 
 	const targetTop = window.scrollY + target.getBoundingClientRect().top
-	return smoothScrollTo(window.scrollX, targetTop)
+	await smoothScrollTo(window.scrollX, targetTop)
 }
 
 async function applyPendingScroll() {
@@ -43,14 +40,12 @@ async function applyPendingScroll() {
 
 onMounted(async () => {
 	void fetchAvailableBrands()
+	void fetchColors()
+	void fetchGears()
+	void fetchFuels()
 	await nextTick()
 	if (!await applyPendingScroll())
 		await scrollToHash(route.hash)
-})
-
-watch(brand, (newValue, oldValue) => {
-	if (newValue !== oldValue)
-		fetchCars({ brand: newValue })
 })
 
 watch(carID, (newValue, oldValue) => {

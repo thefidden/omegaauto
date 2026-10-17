@@ -5,6 +5,6 @@ import router from "./router.ts";
 import {createPinia} from "pinia";
 
 createApp(App)
-    .use(router)
     .use(createPinia())
+    .use(router)
     .mount('#app')

@@ -2,114 +2,321 @@
 
 import BlockGlass from "../components/BlockGlass.vue";
 import { storeToRefs } from "pinia";
-import CarListCard from "../components/CarListCard.vue";
-import { useRouter } from "vue-router";
-import { computed, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import Arrow from "../assets/arrow.svg";
+import FilterIcon from "../assets/filter.svg";
 import BlockGlassButton from "../components/BlockGlassButton.vue";
 import LoadingAnimation from "../components/LoadingAnimation.vue";
 import { useStore } from "../stores/Store.ts";
-import { useCarListFilterSet } from "../stores/CarListFilterSet.ts";
+import { useCarListFilters } from "../stores/CarListFiltersStore.ts";
 import TextIconButton from "../components/TextIconButton.vue";
+import CarListFilters from "../components/CarListFilters.vue";
+import CarListCardV2 from "../components/CarListCardV2.vue";
 
 const router = useRouter()
+const route = useRoute()
 
 const store = useStore()
-const { cars, carsLoading } = storeToRefs(store)
+const { cars, carsCount, carsLoading } = storeToRefs(store)
 
-const carListFilterSet = useCarListFilterSet()
-const { brand } = storeToRefs(carListFilterSet)
+const filters = useCarListFilters()
 
+const brand = computed(() => route.query.brand as string | undefined)
 const carsPerPage = 10
-const carListPage = ref(0)
-const carListPages = computed(() => Math.floor(cars.value.length / carsPerPage) + 1)
+const carListPages = computed(() => Math.max(1, Math.ceil(carsCount.value / carsPerPage)))
+const navigationAnimating = ref(true)
+const filtersOpen = ref(false)
+const isMobile = ref(
+	typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches
+)
 
-watch(brand, () => carListPage.value = 0)
+let mobileMediaQuery: MediaQueryList | null = null
+const syncMobile = () => {
+	isMobile.value = mobileMediaQuery?.matches ?? false
+	if (!isMobile.value) filtersOpen.value = false
+}
 
 const goBack = () => router.push({ name: 'main', hash: '#brand-selection' })
 const goToCar = (id: string) => router.push({ name: 'car', params: { id } })
-
-const getBrandLogoHref = (brand: string): string => {
-	const extension = brand.toLowerCase() === "great wall" ? "png" : "svg"
-	return new URL(`../assets/car-logos/${ brand.toLowerCase() }.${ extension }`, import.meta.url).href
+const goToPage = (page: number) => {
+	if (page < 1 || page > carListPages.value || page === filters.page) return
+	filters.page = page
+	filters.apply()
 }
+const onNavigationAnimationEnd = () => {
+	navigationAnimating.value = false
+}
+const openFilters = () => { filtersOpen.value = true }
+const closeFilters = () => { filtersOpen.value = false }
+
+const getBrandLogoHref = (): string => {
+	const extension = brand.value?.toLowerCase() === "great wall" ? "png" : "svg"
+	return new URL(`../assets/car-logos/${ brand.value?.toLowerCase() }.${ extension }`, import.meta.url).href
+}
+
+watch(() => route.query, () => {
+	filters.fetchFromRouteQuery()
+	store.fetchCars()
+}, { immediate: true })
+
+onMounted(() => {
+	mobileMediaQuery = window.matchMedia('(max-width: 900px)')
+	syncMobile()
+	mobileMediaQuery.addEventListener('change', syncMobile)
+})
+
+onUnmounted(() => {
+	mobileMediaQuery?.removeEventListener('change', syncMobile)
+})
 </script>
 
 <template>
-	<LoadingAnimation v-if="carsLoading" />
+	<div class="carListPage">
+		<block-glass v-if="brand"
+					 class="cell heading cell-heading-animation"
+					 style="--background-color: var(--color-secondary-7)">
+			<span class="heading__title"><b>Автомобили {{ brand }}</b></span>
+			<img class="heading__logo" :src="getBrandLogoHref()" :alt="`${brand} logo`" />
+		</block-glass>
 
-	<template v-else>
-		<div class="carListPage">
-			<block-glass class="cell heading cell-heading-animation"
-						 style="--background-color: var(--color-secondary-7)">
-				<text>
-					<span>Автомобили</span>
-					<span><b>{{ brand }}</b></span>
-				</text>
+		<div class="car-list__actions">
+			<TextIconButton class="button__go-back" :icon="Arrow" icon-alt="Назад" @click="goBack()">
+				К выбору марки
+			</TextIconButton>
 
-				<img :src="getBrandLogoHref(brand)" :alt="`${brand} logo`" />
-			</block-glass>
+			<TextIconButton
+				v-if="isMobile"
+				class="button__filters"
+				:icon="FilterIcon"
+				icon-alt="Фильтры"
+				@click="openFilters"
+			>
+				Фильтры
+			</TextIconButton>
+		</div>
 
-			<div class="list">
-				<TextIconButton class="button__go-back" :icon="Arrow" :icon-alt="Arrow" @click="goBack()">
-					Назад
-				</TextIconButton>
+		<CarListFilters
+			v-if="!isMobile"
+			class="car-list-filters car-list-filters--panel"
+		/>
 
-				<car-list-card class="car-list-card-animation"
-							   v-for="(car, index) in cars.slice(carListPage * carsPerPage, (carListPage + 1) * carsPerPage)"
-							   :key="car.id"
-							   @click="goToCar(car.id)"
+		<div class="list">
+			<Transition name="car-list-card__transition" mode="out-in">
+				<LoadingAnimation v-if="carsLoading" key="loading" />
 
-							   :id="car.id"
-							   :model="car.model"
-							   :brand="car.brand"
-							   :year="car.year"
-							   :mileage="car.mileage"
-							   :power="car.power"
-							   :displacement="car.displacement"
-							   :fuel="car.fuel"
-							   :gear="car.gear"
-							   :color="car.color"
-							   :price="car.price"
-							   :status="car.status"
-							   :images="car.images"
+				<div v-else-if="cars.length" key="list" class="list__cards">
+					<CarListCardV2
+						v-for="(car, index) in cars"
+						:key="car.id"
+						class="car-list-card-animation"
+						:style="{ animationDelay: `${ index * 0.1 }s` }"
+						@click="goToCar(car.id)"
 
-							   :style="{ animationDelay: `${0.3 + 0.2 * index}s` }"
-				/>
+						:id="car.id"
+						:model="car.model"
+						:brand="car.brand"
+						:year="car.year"
+						:mileage="car.mileage"
+						:power="car.power"
+						:displacement="car.displacement"
+						:fuel="car.fuel"
+						:gear="car.gear"
+						:color="car.color"
+						:price="car.price"
+						:status="car.status"
+						:images="car.images"
+					/>
+				</div>
+
+				<h2 v-else key="empty" class="list__car-list-empty">
+					Автомобили с заданными параметрами отсутствуют
+				</h2>
+			</Transition>
+		</div>
+	</div>
+
+	<div
+		class="car-list__navigation"
+		:class="{ 'car-list__navigation__animation': navigationAnimating }"
+		@animationend="onNavigationAnimationEnd"
+	>
+		<block-glass-button class="button prev"
+							@click="goToPage(filters.page - 1)"
+							:style="{
+								borderRadius: 100,
+								cursor: filters.page <= 1 ? 'not-allowed' : 'pointer',
+								opacity: filters.page <= 1 ? '.5' : '1'
+							}"
+		>
+			<img :src="Arrow" alt="Arrow" />
+		</block-glass-button>
+
+		<block-glass class="page">
+			Страница {{ filters.page }} из {{ carListPages }}
+		</block-glass>
+
+		<block-glass-button class="button next"
+							@click="goToPage(filters.page + 1)"
+							:style="{
+								borderRadius: 100,
+								cursor: filters.page >= carListPages ? 'not-allowed' : 'pointer',
+								opacity: filters.page >= carListPages ? '.5' : '1'
+							}"
+		>
+			<img :src="Arrow" alt="Arrow" />
+		</block-glass-button>
+	</div>
+
+	<Teleport to="body">
+		<Transition name="car-list-filters-modal">
+			<div
+				v-if="isMobile && filtersOpen"
+				class="car-list-filters-modal"
+				@click.self="closeFilters"
+				@keydown.esc="closeFilters"
+			>
+				<div class="car-list-filters-modal__box-wrap">
+					<CarListFilters
+						class="car-list-filters car-list-filters--modal"
+						@applied="closeFilters"
+					/>
+					<button
+						type="button"
+						class="car-list-filters-modal__close"
+						aria-label="Закрыть фильтры"
+						@click="closeFilters"
+					>
+						<span></span>
+						<span></span>
+					</button>
+				</div>
 			</div>
-		</div>
-
-		<div class="car-list__navigation car-list__navigation__animation">
-			<block-glass-button class="button prev"
-								@click="carListPage = Math.max(0, carListPage - 1)"
-								:style="{
-									borderRadius: 100,
-									cursor: carListPage === 0 ? 'not-allowed' : 'pointer',
-									opacity: carListPage === 0 ? '.5' : '1'
-								}"
-			>
-				<img :src="Arrow" alt="Arrow" />
-			</block-glass-button>
-
-			<block-glass class="page">
-				Страница {{ carListPage + 1 }} из {{ carListPages }}
-			</block-glass>
-
-			<block-glass-button class="button next"
-								@click="carListPage = Math.min(carListPage + 1, carListPages - 1)"
-								:style="{
-									borderRadius: 100,
-									cursor: carListPage >= carListPages - 1 ? 'not-allowed' : 'pointer',
-									opacity: carListPage >= carListPages - 1 ? '.5' : '1'
-								}"
-			>
-				<img :src="Arrow" alt="Arrow" />
-			</block-glass-button>
-		</div>
-	</template>
+		</Transition>
+	</Teleport>
 </template>
 
 <style scoped>
+.carListPage {
+	--page-pad-x: 24px;
+	--page-pad-top: 120px;
+	--page-pad-bottom: 120px;
+
+	position: relative;
+	box-sizing: border-box;
+
+	display: grid;
+	grid-template-areas:
+		"actions heading"
+		"filters list";
+	grid-template-columns: minmax(0, 450px) minmax(0, 1fr);
+
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+
+	padding:
+		var(--page-pad-top)
+		var(--page-pad-x)
+		var(--page-pad-bottom);
+
+	column-gap: 50px;
+	row-gap: 25px;
+}
+
+.car-list-filters--panel {
+	grid-area: filters;
+	background-color: var(--color-primary-30);
+	min-width: 0;
+	max-width: 100%;
+}
+
+.car-list__actions {
+	grid-area: actions;
+
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 12px;
+	min-width: 0;
+}
+
+.cell.heading {
+	grid-area: heading;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+
+	align-self: center;
+	justify-self: stretch;
+
+	background-color: var(--color-primary-30);
+
+	font-size: 32px;
+	font-weight: 400;
+	color: rgba(255, 255, 255, 0.7);
+
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	min-height: 75px;
+
+	box-sizing: border-box;
+	padding: 15px clamp(16px, 3vw, 50px);
+}
+
+.heading__title {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.heading__title b {
+	color: white;
+}
+
+.heading__logo {
+	display: block;
+	flex: 0 0 auto;
+
+	width: auto;
+	height: auto;
+	max-width: min(130px, 28%);
+	max-height: 48px;
+
+	object-fit: contain;
+	object-position: center;
+}
+
+.list {
+	grid-area: list;
+
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+
+	width: 100%;
+	min-width: 0;
+}
+
+.list__cards {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 20px;
+	width: 100%;
+	min-width: 0;
+}
+
+.list__car-list-empty {
+	color: var(--color-secondary-70);
+	user-select: none;
+	text-align: center;
+	padding-inline: 8px;
+}
+
 .car-list__navigation {
 	display: flex;
 	flex-direction: row;
@@ -127,7 +334,7 @@ const getBrandLogoHref = (brand: string): string => {
 	flex: 0 0 60px;
 	width: 60px;
 	height: 100%;
-	aspect-ratio: 1/1;
+	aspect-ratio: 1 / 1;
 	border-radius: 50% !important;
 
 	box-sizing: border-box;
@@ -156,67 +363,131 @@ const getBrandLogoHref = (brand: string): string => {
 	user-select: none;
 }
 
-.carListPage {
+.button__go-back,
+.button__filters {
+	width: fit-content;
+	max-width: 100%;
+}
+
+.car-list-filters-modal {
+	display: grid;
+	place-items: center;
+
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+
+	box-sizing: border-box;
+	padding: max(16px, env(safe-area-inset-top))
+		max(16px, env(safe-area-inset-right))
+		max(16px, env(safe-area-inset-bottom))
+		max(16px, env(safe-area-inset-left));
+
+	background-color: rgba(0, 0, 0, .5);
+	backdrop-filter: blur(10px);
+
+	overflow-y: auto;
+}
+
+.car-list-filters-modal__box-wrap {
 	position: relative;
 
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-
-	padding: 120px 0;
-	gap: 100px;
-
-	box-sizing: border-box;
+	width: min(450px, calc(100vw - 32px));
+	max-height: calc(100dvh - 32px);
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
-.cell.heading {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-
-	font-size: 40px;
-	font-weight: 400;
-	color: rgba(255, 255, 255, 0.7);
-
-	width: 600px;
-	height: 150px;
-
-	box-sizing: border-box;
-	padding: 30px 50px;
+.car-list-filters-modal__box-wrap :deep(.car-list-filters) {
+	background-color: var(--color-primary-80);
+	max-width: none;
 }
 
-.cell.heading img {
+.car-list-filters-modal__box-wrap :deep(img) {
+	width: auto;
+	height: auto;
+	max-height: 22px;
 	object-fit: contain;
-
-	width: 100%;
-	height: 100%;
-
-	max-width: 130px;
-	max-height: 90px;
 }
 
-.heading text {
-	display: flex;
-	flex-direction: column;
+.car-list-filters-modal__close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 2;
+
+	display: grid;
+	place-items: center;
+
+	width: 40px;
+	height: 40px;
+
+	color: white;
+	background-color: transparent;
+
+	box-sizing: border-box;
+	border-radius: 100%;
+	padding: 0;
+	border: 0;
+
+	cursor: pointer;
+
+	transition: opacity .3s ease-out;
 }
 
-.heading text b {
-	color: rgba(255, 255, 255, 0.9);
+.car-list-filters-modal__close span {
+	position: absolute;
+
+	background-color: white;
+
+	box-sizing: border-box;
+	border-radius: 2px;
+
+	width: 25px;
+	height: 5px;
 }
 
-.list {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+.car-list-filters-modal__close:hover {
+	opacity: .5;
+}
 
-	gap: 20px;
+.car-list-filters-modal__close span:first-child { rotate: 45deg; }
+.car-list-filters-modal__close span:last-child { rotate: -45deg; }
+
+.car-list-filters-modal-enter-from,
+.car-list-filters-modal-leave-to {
+	opacity: 0;
+	filter: blur(10px);
+	scale: 1.2;
+}
+
+.car-list-filters-modal-enter-to,
+.car-list-filters-modal-leave-from {
+	opacity: 1;
+	filter: blur(0);
+	scale: 1;
+}
+
+.car-list-filters-modal-enter-active,
+.car-list-filters-modal-leave-active {
+	transition: opacity .3s ease-out, filter .3s ease-out, scale .3s ease-out;
 }
 
 @media (max-width: 1100px) {
 	.carListPage {
-		padding-inline: 24px;
-		padding-bottom: 170px;
+		--page-pad-x: 24px;
+		--page-pad-bottom: 170px;
+		column-gap: 28px;
+		grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+	}
+
+	.cell.heading {
+		font-size: 28px;
+	}
+
+	.heading__logo {
+		max-width: min(110px, 30%);
+		max-height: 44px;
 	}
 
 	.car-list__navigation {
@@ -225,30 +496,100 @@ const getBrandLogoHref = (brand: string): string => {
 		gap: 16px;
 	}
 
-	.car-list__navigation .page { padding-inline: 28px; }
+	.car-list__navigation .page {
+		padding-inline: 28px;
+	}
+}
+
+@media (max-width: 900px) {
+	.carListPage {
+		--page-pad-x: 16px;
+		--page-pad-top: 100px;
+		--page-pad-bottom: 32px;
+
+		grid-template-areas:
+			"heading"
+			"actions"
+			"list";
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: 18px;
+	}
+
+	.cell.heading {
+		min-height: 64px;
+		padding: 14px 16px;
+		font-size: clamp(18px, 5vw, 22px);
+		gap: 12px;
+	}
+
+	.heading__logo {
+		max-width: min(72px, 26%);
+		max-height: 36px;
+	}
+
+	.car-list__actions {
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px 16px;
+		width: 100%;
+	}
+
+	.list__cards {
+		gap: 16px;
+	}
+
+	.car-list__navigation {
+		position: relative;
+		right: auto;
+		bottom: auto;
+		align-self: flex-end;
+		justify-content: flex-end;
+		flex-wrap: wrap;
+		width: calc(100% - 32px);
+		max-width: 100%;
+		height: auto;
+		min-height: 48px;
+		margin: 0 16px 24px auto;
+		gap: 12px;
+	}
+
+	.car-list__navigation .button {
+		flex-basis: 48px;
+		width: 48px;
+		height: 48px;
+		padding: 10px;
+	}
+
+	.car-list__navigation .page {
+		padding: 0 14px;
+		font-size: 14px;
+		min-height: 48px;
+	}
 }
 
 @media (max-width: 700px) {
 	.carListPage {
-		padding: 100px 16px 150px;
-		gap: 48px;
+		--page-pad-x: 16px;
+		--page-pad-top: 96px;
+		--page-pad-bottom: 20px;
 	}
 
 	.cell.heading {
-		width: 100%;
-		height: 110px;
-		padding: 20px 28px;
-		font-size: 28px;
+		padding: 12px 14px;
 	}
 
-	.cell.heading img { max-width: 90px; max-height: 66px; }
-
-	.list { width: 100%; gap: 16px; }
+	.heading__logo {
+		max-width: min(64px, 24%);
+		max-height: 32px;
+	}
 
 	.car-list__navigation {
-		right: 16px;
-		bottom: 16px;
-		height: 48px;
+		right: auto;
+		bottom: auto;
+		width: calc(100% - 32px);
+		margin: 0 16px 16px auto;
 		gap: 8px;
 	}
 
@@ -259,20 +600,8 @@ const getBrandLogoHref = (brand: string): string => {
 	}
 
 	.car-list__navigation .page {
-		padding: 0 16px;
-		font-size: 14px;
-	}
-}
-
-@media (max-width: 900px) {
-	.carListPage { padding-bottom: 32px; }
-
-	.car-list__navigation {
-		position: relative;
-		right: auto;
-		bottom: auto;
-		align-self: flex-end;
-		margin: 0 16px 24px auto;
+		padding: 0 10px;
+		font-size: 13px;
 	}
 }
 
@@ -282,29 +611,46 @@ const getBrandLogoHref = (brand: string): string => {
 	animation: .5s cellHeadingSlideIn ease-out forwards;
 }
 
-.car-list-card-animation {
-	opacity: 0;
-	will-change: opacity, translate, filter;
-	animation: .5s carListCardSlideIn ease-out forwards;
-}
-
 .car-list__navigation__animation {
 	opacity: 0;
-	will-change: opacity, translate, filter;
+	will-change: opacity, translate;
 	animation: .5s carListPagesSlideIn ease-out .3s forwards;
 }
 
-@keyframes carListCardSlideIn {
-	from {
-		opacity: 0;
-		translate: -20px 0;
-		filter: blur(10px);
-	}
-	to {
-		opacity: 1;
-		translate: 0 0;
-		filter: blur(0);
-	}
+.car-list-card__transition-enter-from,
+.car-list-card__transition-leave-to {
+	opacity: 0;
+	filter: blur(10px);
+	translate: 20px 0;
+}
+
+.car-list-card__transition-enter-to,
+.car-list-card__transition-leave-from {
+	opacity: 1;
+	filter: blur(0);
+	translate: 0 0;
+}
+
+.car-list-card__transition-enter-active,
+.car-list-card__transition-leave-active {
+	transition: opacity .3s ease-out, filter .3s ease-out, translate .3s ease-out;
+}
+
+.list__cards.car-list-card__transition-enter-from,
+.list__cards.car-list-card__transition-enter-to {
+	opacity: 1;
+	filter: none;
+	translate: none;
+}
+
+.list__cards.car-list-card__transition-enter-active {
+	transition: none;
+}
+
+.car-list-card-animation {
+	opacity: 0;
+	will-change: opacity, translate, filter;
+	animation: .3s carListCardSlideIn ease-out forwards;
 }
 
 @keyframes cellHeadingSlideIn {
@@ -324,6 +670,17 @@ const getBrandLogoHref = (brand: string): string => {
 	from {
 		opacity: 0;
 		translate: 0 5px;
+	}
+	to {
+		opacity: 1;
+		translate: 0 0;
+	}
+}
+
+@keyframes carListCardSlideIn {
+	from {
+		opacity: 0;
+		translate: 20px 0;
 		filter: blur(10px);
 	}
 	to {

@@ -16,15 +16,15 @@ const goToBrandSelection = () => {
 
 <template>
     <div class="sector1">
-        <img :src="carSideView" alt="CarInterface Side View" class="carSideView"/>
+        <img :src="carSideView" alt="Автомобиль, вид сбоку" class="carSideView"/>
 
         <div class="grid">
             <block-glass class="china" style="--background-color: var(--color-secondary-7)">
-                <img :src="chinaMap" alt="China" class="flag"/>
+                <img :src="chinaMap" alt="Китай" class="flag"/>
             </block-glass>
 
             <block-glass class="russia" style="--background-color: var(--color-secondary-7)">
-                <img :src="russiaMap" alt="Russia" class="flag"/>
+                <img :src="russiaMap" alt="Россия" class="flag"/>
             </block-glass>
 
             <block-glass class="import" style="--background-color: var(--color-secondary-7)">
@@ -33,9 +33,9 @@ const goToBrandSelection = () => {
             </block-glass>
 
             <block-glass-button class="go-to-store" @click="goToBrandSelection()">
-                <img :src="lineGradient" alt="Line Gradient" class="lineGradient"/>
+                <img :src="lineGradient" alt="" class="lineGradient"/>
                 Перейти к каталогу
-                <img :src="lineGradient" alt="Line Gradient" class="lineGradient"/>
+                <img :src="lineGradient" alt="" class="lineGradient"/>
             </block-glass-button>
         </div>
     </div>
@@ -43,6 +43,8 @@ const goToBrandSelection = () => {
 
 <style scoped>
 .sector1 {
+    --safe-x: 24px;
+
     position: relative;
 
     display: flex;
@@ -50,24 +52,31 @@ const goToBrandSelection = () => {
     align-items: center;
 
     width: 100%;
-    height: 800px;
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    min-height: 800px;
 
     box-sizing: border-box;
-
-    padding: 50px 0;
+    padding: 50px var(--safe-x) 40px;
+    overflow: visible;
 }
 
 .grid {
+    position: relative;
+    z-index: 1;
+
     display: grid;
-    grid-gap: 50px;
-    grid-template-columns: 0.75fr 5fr 0.75fr;
-    grid-template-rows: 2fr 1fr;
+    grid-gap: 40px;
+    grid-template-columns: 100px minmax(0, 1fr) 100px;
+    grid-template-rows: auto auto;
     grid-template-areas:
         "china import russia"
         "store store store";
 
-    width: 950px;
-    height: 225px;
+    width: 100%;
+    max-width: 950px;
+    min-width: 0;
 
     align-items: center;
     justify-items: center;
@@ -75,9 +84,11 @@ const goToBrandSelection = () => {
 
 .grid .import {
     grid-area: import;
-
     width: 100%;
-    height: 100%;
+    min-width: 0;
+    min-height: 120px;
+    box-sizing: border-box;
+    padding: 16px 20px;
 }
 
 .grid .go-to-store {
@@ -87,37 +98,43 @@ const goToBrandSelection = () => {
     align-items: center;
 
     width: 100%;
-    height: 100%;
-
-    gap: 50px;
+    min-height: 72px;
+    gap: clamp(16px, 4vw, 50px);
 
     grid-area: store;
-
-    .lineGradient {
-        opacity: 80%;
-    }
-
-    .lineGradient:nth-child(2) {
-        rotate: 180deg;
-    }
+    box-sizing: border-box;
+    padding: 12px 16px;
 }
 
-.grid .china {
-    grid-area: china;
-    width: 100px;
-    height: 100px;
+.grid .go-to-store .lineGradient {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(120px, 18vw);
+    max-height: 24px;
+    object-fit: contain;
+    opacity: 0.8;
 }
 
+.grid .go-to-store .lineGradient:last-child {
+    rotate: 180deg;
+}
+
+.grid .china,
 .grid .russia {
-    grid-area: russia;
     width: 100px;
     height: 100px;
 }
+
+.grid .china { grid-area: china; }
+.grid .russia { grid-area: russia; }
 
 .flag {
     display: block;
-    width: 68%;
-    height: 68%;
+    width: auto;
+    height: auto;
+    max-width: 68%;
+    max-height: 68%;
     object-fit: contain;
 }
 
@@ -129,78 +146,84 @@ const goToBrandSelection = () => {
     gap: 6px;
 
     color: rgb(255, 255, 255, 0.7);
-    font-size: 40px;
-    line-height: 1.1;
-
+    font-size: clamp(22px, 3.5vw, 40px);
+    line-height: 1.15;
     text-align: center;
+}
 
-    b {
-        color: rgb(255, 255, 255, 0.9)
-    }
+.import b {
+    color: rgb(255, 255, 255, 0.9);
 }
 
 .go-to-store {
     color: rgb(255, 255, 255, 0.7);
-    font-size: 20px;
+    font-size: clamp(16px, 2vw, 20px);
     font-weight: 700;
-
     text-align: center;
 }
 
 .carSideView {
     position: absolute;
+    z-index: 0;
 
     top: 224px;
     left: 50%;
-
     transform: translateX(-50%);
 
+    display: block;
+    width: auto;
     max-width: 95%;
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
 }
 
-.go-to-store {
-    img {
-        will-change: transform, opacity;
-        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-    }
+.go-to-store .lineGradient {
+    will-change: transform, opacity;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
-.go-to-store:hover {
-    .lineGradient:nth-child(1) {
-        opacity: 0;
-        transform: translateX(-25px);
-    }
-
-    .lineGradient:nth-child(2) {
-        opacity: 0;
-        transform: translateX(-25px);
-    }
+.go-to-store:hover .lineGradient:first-child,
+.go-to-store:hover .lineGradient:last-child {
+    opacity: 0;
+    transform: translateX(-25px);
 }
 
 @media (max-width: 1100px) {
-    .grid {
-        width: min(86vw, 850px);
-        grid-gap: 30px;
+    .sector1 {
+        --safe-x: 24px;
+        min-height: 720px;
     }
 
-    .import { font-size: clamp(28px, 4vw, 36px); }
+    .grid {
+        grid-gap: 24px;
+        grid-template-columns: 80px minmax(0, 1fr) 80px;
+    }
+
+    .grid .china,
+    .grid .russia {
+        width: 80px;
+        height: 80px;
+    }
+
+    .carSideView {
+        max-width: min(95%, calc(100% - 48px));
+    }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
     .sector1 {
-        height: 650px;
-        padding-top: 110px;
+        --safe-x: 16px;
+        min-height: 680px;
+        padding-top: 100px;
+        padding-bottom: 28px;
     }
 
     .grid {
         grid-template-columns: 64px minmax(0, 1fr) 64px;
-        grid-template-rows: minmax(128px, auto) 60px;
+        column-gap: 16px;
+        row-gap: 18px;
         width: 100%;
-        height: auto;
-        column-gap: 24px;
-        row-gap: 22px;
-        padding: 0 16px;
-        box-sizing: border-box;
     }
 
     .grid .china,
@@ -209,25 +232,38 @@ const goToBrandSelection = () => {
         height: 64px;
     }
 
-    .flag { width: 62%; height: 62%; }
+    .grid .import {
+        min-height: 0;
+        padding: 14px 12px;
+    }
 
     .import {
-        padding: 12px;
-        font-size: clamp(20px, 6.5vw, 27px);
+        font-size: clamp(18px, 5.2vw, 26px);
     }
 
     .grid .go-to-store {
-        min-height: 60px;
-        gap: 14px;
+        min-height: 56px;
+        gap: 12px;
         font-size: 16px;
     }
-
-    .go-to-store .lineGradient { width: min(18vw, 68px); }
 
     .carSideView {
         top: 360px;
         width: calc(100% - 32px);
         max-width: 560px;
+        height: auto;
+    }
+}
+
+@media (max-width: 700px) {
+    .sector1 {
+        --safe-x: 16px;
+        min-height: 650px;
+        padding-top: 96px;
+    }
+
+    .grid .go-to-store .lineGradient {
+        max-width: min(68px, 18vw);
     }
 }
 </style>

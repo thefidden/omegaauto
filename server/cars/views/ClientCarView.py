@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny
 
 from cars.filters import CarFilter
 from cars.models import Car
+from cars.paginations import CarPagination
 from cars.serializers import ClientCarSerializer
 
 
@@ -23,5 +24,7 @@ class ClientCarViewSet(viewsets.ModelViewSet):
     filterset_class = CarFilter
 
     serializer_class = ClientCarSerializer
+    pagination_class = CarPagination
+
     permission_classes = (AllowAny,)
     http_method_names = ('get',)

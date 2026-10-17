@@ -16,7 +16,7 @@ import BlockGlass from "../BlockGlass.vue"
         </block-glass>
 
         <block-glass class="cell brands">
-            <img :src="EarthIcon" alt="Earth"/>
+            <img :src="EarthIcon" alt=""/>
             <div class="name">Автомобили любых производителей</div>
             <div class="description">
                 <span>Подберём автомобиль любой марки: китайской,</span>
@@ -25,7 +25,7 @@ import BlockGlass from "../BlockGlass.vue"
         </block-glass>
 
         <block-glass class="cell review">
-            <img :src="ShieldIcon" alt="Earth"/>
+            <img :src="ShieldIcon" alt=""/>
             <div class="name">Юридическая и техническая проверка</div>
             <div class="description">
                 <span>Проверим историю, документы</span>
@@ -34,7 +34,7 @@ import BlockGlass from "../BlockGlass.vue"
         </block-glass>
 
         <block-glass class="cell search">
-            <img :src="SearchIcon" alt="Earth"/>
+            <img :src="SearchIcon" alt=""/>
             <div class="name">Тщательный подбор под запросы</div>
             <div class="description">
                 <span>Подберём автомобиль нужной марки,</span>
@@ -43,7 +43,7 @@ import BlockGlass from "../BlockGlass.vue"
         </block-glass>
 
         <block-glass class="cell escort">
-            <img :src="DeliveryIcon" alt="Earth"/>
+            <img :src="DeliveryIcon" alt=""/>
             <div class="name">Сопровождение до получения</div>
             <div class="description">
                 <span>Организуем процесс покупки, доставки</span>
@@ -58,37 +58,48 @@ import BlockGlass from "../BlockGlass.vue"
     position: relative;
 
     width: 100%;
-    height: 800px;
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    min-height: 0;
 
     display: grid;
     grid-template-areas:
-            ". header header ."
-            "brands brands search search"
-            "review review escort escort";
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 0.5fr 1fr 1fr;
-    grid-gap: 100px;
+        ". header header ."
+        "brands brands search search"
+        "review review escort escort";
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: auto;
+    grid-gap: 48px 40px;
 
-    justify-items: center;
-    align-items: center;
+    justify-items: stretch;
+    align-items: stretch;
+
+    box-sizing: border-box;
+    padding: 24px 24px 48px;
+    overflow: visible;
 }
 
 .cell {
+    position: relative;
+
     width: 100%;
-    height: 100%;
+    min-width: 0;
+    height: auto;
+    min-height: 220px;
 
     display: grid;
     grid-template-areas:
         "icon name"
         "description description";
-    grid-template-columns: minmax(48px, 1fr) minmax(0, 1fr);
-    grid-template-rows: auto 1fr;
-    gap: 18px 24px;
+    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 16px 20px;
     justify-items: end;
     align-items: start;
 
     box-sizing: border-box;
-    padding: 30px;
+    padding: 28px;
 
     text-align: end;
 }
@@ -96,19 +107,32 @@ import BlockGlass from "../BlockGlass.vue"
 .cell img {
     grid-area: icon;
 
-    position: absolute;
-    left: 0;
-    top: 0;
+    position: relative;
+    justify-self: start;
+    align-self: start;
+
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 56px;
+    max-height: 56px;
+    object-fit: contain;
 }
 
 .cell .name {
     grid-area: name;
 
+    min-width: 0;
+    max-width: 100%;
+
     font-weight: 700;
-    font-size: 24px;
+    font-size: clamp(18px, 1.7vw, 24px);
+    line-height: 1.25;
     color: rgba(255, 255, 255, 0.9);
 
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: manual;
 }
 
 .cell .description {
@@ -117,77 +141,115 @@ import BlockGlass from "../BlockGlass.vue"
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0;
+    max-width: 100%;
     line-height: 1.35;
 
     font-weight: 400;
-    font-size: 24px;
+    font-size: clamp(16px, 1.5vw, 22px);
     color: rgba(255, 255, 255, 0.7);
+
+    overflow-wrap: break-word;
+    word-break: normal;
 }
 
 .heading {
     grid-area: header;
 
-    width: 750px;
-    height: 120px;
+    width: min(750px, 100%);
+    max-width: 100%;
+    height: auto;
+    min-height: 100px;
 
     font-weight: 700;
-    font-size: 40px;
+    font-size: clamp(28px, 3vw, 40px);
     color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+
+	background-color: var(--color-primary-30);
 
     display: flex;
     justify-content: center;
     align-items: center;
+
+    box-sizing: border-box;
+    padding: 20px 24px;
+    justify-self: center;
+
+
 }
 
 .brands { grid-area: brands; }
-
 .search { grid-area: search; }
-
 .review { grid-area: review; }
-
 .escort { grid-area: escort; }
 
 .carHighAngleView {
     position: absolute;
+    z-index: 0;
+    display: block;
 
-    width: 578px;
-    height: 385px;
+    width: min(480px, 36vw);
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.cell,
+.heading {
+    position: relative;
+    z-index: 1;
 }
 
 .carHighAngleView:nth-child(1) {
-    left: 922px;
-    top: 415px;
+    left: auto;
+    right: 0;
+    top: 48%;
     rotate: 180deg;
 }
 
 .carHighAngleView:nth-child(2) {
     left: 0;
-    top: 316px;
+    top: 36%;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1250px) {
     .sector3 {
-        height: auto;
         grid-template-areas:
             "header header"
             "brands search"
             "review escort";
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        grid-template-rows: 120px repeat(2, minmax(230px, auto));
-        grid-gap: 30px;
-        padding: 40px 24px;
-        box-sizing: border-box;
+        grid-gap: 28px;
+        padding: 32px 24px 40px;
     }
 
-    .heading { width: 100%; }
-    .cell .name, .cell .description { font-size: 20px; }
-    .cell .name { text-wrap: wrap; }
-    .carHighAngleView { opacity: .65; }
+    .heading {
+        width: 100%;
+        min-height: 88px;
+        font-size: clamp(24px, 3.5vw, 34px);
+    }
+
+    .cell {
+        min-height: 200px;
+        padding: 24px;
+        grid-template-columns: 56px minmax(0, 1fr);
+    }
+
+    .cell .name,
+    .cell .description {
+        font-size: clamp(16px, 1.8vw, 20px);
+    }
+
+    .carHighAngleView {
+        width: min(300px, 34vw);
+        opacity: 0.4;
+    }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
     .sector3 {
-        height: auto;
         grid-template-areas:
             "header"
             "brands"
@@ -195,53 +257,54 @@ import BlockGlass from "../BlockGlass.vue"
             "search"
             "escort";
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: 100px repeat(4, minmax(206px, auto));
-        gap: 20px;
-        padding: 40px 16px;
-        box-sizing: border-box;
+        gap: 18px;
+        padding: 28px 16px 32px;
     }
 
-    .heading { width: 100%; height: 100px; font-size: 28px; }
-
-    .cell:not(.heading) {
-        min-height: 190px;
+    .heading {
+        min-height: 80px;
+        font-size: clamp(22px, 6vw, 28px);
+        padding: 16px;
     }
 
     .cell {
-        padding: 24px;
-        grid-template-columns: 64px minmax(0, 1fr);
-        grid-template-rows: auto 1fr;
-        gap: 18px;
+        min-height: 0;
+        padding: 20px;
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 12px 14px;
         justify-items: start;
         text-align: start;
     }
 
-    .cell img { position: static; width: 38px; height: 38px; }
-    .cell .name { font-size: 20px; text-wrap: wrap; }
+    .cell img {
+        max-width: 40px;
+        max-height: 40px;
+    }
+
+    .cell .name {
+        font-size: 18px;
+    }
+
     .cell .description {
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.45;
         gap: 6px;
         color: var(--color-secondary-90);
     }
 
     .carHighAngleView {
-        display: block;
-        width: 220px;
-        height: auto;
-        opacity: .2;
-        pointer-events: none;
+        width: min(200px, 50vw);
+        opacity: 0.2;
     }
 
     .carHighAngleView:nth-child(1) {
-        top: 360px;
-        right: -90px;
-        left: auto;
+        top: 24%;
+        right: 0;
     }
 
     .carHighAngleView:nth-child(2) {
-        top: 740px;
-        left: -100px;
+        top: 62%;
+        left: 0;
     }
 }
 </style>

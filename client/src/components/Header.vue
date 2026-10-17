@@ -176,13 +176,16 @@ const menuOpen = ref(false)
 @media (max-width: 900px) {
 	.header {
 		inset: auto;
-		top: 16px;
-		left: 16px;
-		width: calc(100vw - 32px);
+		top: max(16px, env(safe-area-inset-top));
+		left: max(16px, env(safe-area-inset-left));
+		right: max(16px, env(safe-area-inset-right));
+		width: auto;
+		max-width: calc(100vw - 32px);
 		height: 60px;
 		padding: 8px 12px 8px 20px;
 		transform: none;
 		background-color: rgba(8, 8, 12, 0.48) !important;
+		box-sizing: border-box;
 	}
 
 	.omega-auto {

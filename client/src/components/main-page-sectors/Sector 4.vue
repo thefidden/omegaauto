@@ -5,29 +5,29 @@ import { computed, ref } from "vue";
 import BlockGlassButton from "../BlockGlassButton.vue";
 import Arrow from "../../assets/arrow.svg"
 import { storeToRefs } from "pinia";
-import { useRouter } from "vue-router";
 import { useStore } from "../../stores/Store.ts";
 import LoadingAnimation from "../LoadingAnimation.vue";
-
-const router = useRouter()
+import { useCarListFilters } from "../../stores/CarListFiltersStore.ts";
 
 const store = useStore()
 const { brands, brandsLoading } = storeToRefs(store)
 
+const carListFilterSetStore = useCarListFilters()
+const { apply: applyFilterSet, reset: flushFilterSet } = carListFilterSetStore
+
 const brandsPerPage = 10
 const brandListPage = ref(0)
-const brandListPages = computed(() => Math.max(1, Math.ceil(brands.value.length / brandsPerPage)))
+const brandListPages = computed(() => Math.floor(brands.value.length / brandsPerPage) + 1)
 
 const getBrandLogoHref = (brand: string): string => {
 	const extension = brand.toLowerCase() === "great wall" ? "png" : "svg"
 	return new URL(`../../assets/car-logos/${ brand.toLowerCase() }.${ extension }`, import.meta.url).href
 }
 
-const goToCarList = (brand: string) => {
-	router.push({
-		name: 'car-list',
-		query: { brand }
-	})
+const goToBrand = (brand: string) => {
+	flushFilterSet()
+	carListFilterSetStore.brand = brand
+	applyFilterSet()
 }
 </script>
 
@@ -46,7 +46,7 @@ const goToCarList = (brand: string) => {
 						<block-glass-button
 							v-for="brand in brands.slice(brandListPage * brandsPerPage, (brandListPage + 1) * brandsPerPage)"
 							:key="brand"
-							@click="goToCarList(brand)"
+							@click="goToBrand(brand)"
 							class="cell car"
 						>
 							{{ brand }}
@@ -99,14 +99,19 @@ const goToCarList = (brand: string) => {
 <style scoped>
 .sector4 {
 	position: relative;
+	isolation: isolate;
 
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 
-	gap: 100px;
+	gap: 48px;
 
 	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	padding-inline: 24px;
 }
 
 .cars {
@@ -173,8 +178,10 @@ const goToCarList = (brand: string) => {
 
 .car .image-frame {
 	position: relative;
-	width: 100px;
-	height: 50px;
+	flex: 0 0 auto;
+	width: min(100px, 28%);
+	height: auto;
+	max-height: 50px;
 
 	display: flex;
 	flex-direction: row;
@@ -182,7 +189,19 @@ const goToCarList = (brand: string) => {
 	align-items: center;
 }
 
-.car img {
+.car .image-frame img {
+	display: block;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 50px;
+	object-fit: contain;
+}
+
+.car .brand-logo__blurred__img {
+	width: auto;
+	height: auto;
+	max-width: 120px;
 	object-fit: contain;
 }
 
@@ -262,12 +281,30 @@ const goToCarList = (brand: string) => {
 }
 
 @media (max-width: 1100px) {
-	.sector4 { padding-inline: 24px; box-sizing: border-box; }
+	.sector4 {
+		padding-inline: 24px;
+		box-sizing: border-box;
+		gap: 48px;
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.heading {
+		width: 100%;
+		max-width: 100%;
+		height: auto;
+		min-height: 96px;
+		padding: 16px 20px;
+		box-sizing: border-box;
+		font-size: clamp(24px, 4vw, 36px);
+		text-align: center;
+	}
 
 	.cars {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		grid-template-rows: repeat(6, 104px);
 		gap: 24px;
+		width: 100%;
 	}
 
 	.brand-page {
@@ -293,7 +330,27 @@ const goToCarList = (brand: string) => {
 		padding: 18px;
 	}
 
+	.button img {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+		object-fit: contain;
+	}
+
 	.page { height: 64px; }
+}
+
+@media (max-width: 900px) {
+	.sector4 {
+		padding-inline: 16px;
+		gap: 40px;
+	}
+
+	.heading {
+		min-height: 88px;
+		font-size: clamp(22px, 6vw, 30px);
+	}
 }
 
 @media (max-width: 700px) {

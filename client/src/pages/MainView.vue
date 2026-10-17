@@ -17,31 +17,42 @@ import Sector4 from "../components/main-page-sectors/Sector 4.vue"
 
 <style scoped>
 .mainPage {
+    --safe-x: 0;
+
     position: relative;
 
     display: flex;
     flex-direction: column;
 
-    min-height: 3700px;
-    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    align-items: stretch;
 
-    padding: 100px 0;
-    gap: 100px;
+    padding: 100px 0 64px;
+    gap: 80px;
 
     box-sizing: border-box;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1250px) {
     .mainPage {
-        height: auto;
-        min-height: 3700px;
+        gap: 64px;
+    }
+}
+
+@media (max-width: 900px) {
+    .mainPage {
+        padding: 88px 0 56px;
+        gap: 48px;
     }
 }
 
 @media (max-width: 700px) {
     .mainPage {
-        padding: 80px 0 120px;
-        gap: 80px;
+        padding: 80px 0 48px;
+        gap: 40px;
     }
 }
 

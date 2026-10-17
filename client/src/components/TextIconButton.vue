@@ -44,6 +44,8 @@ const element = computed(() => props.href ? "a" : "button")
 	display: flex;
 	align-items: center;
 
+	width: fit-content;
+
 	box-sizing: border-box;
 	padding: 0 35px;
 
@@ -54,16 +56,17 @@ const element = computed(() => props.href ? "a" : "button")
 	color: var(--color-secondary-70);
 	text-decoration: none;
 
-	width: 100%;
 	cursor: pointer;
 }
 
 .text-icon-button img {
 	position: absolute;
-	height: 15px;
-
 	left: 0;
 	top: 50%;
+
+	width: auto;
+	height: 15px;
+	object-fit: contain;
 
 	transform: translateY(-50%);
 }
