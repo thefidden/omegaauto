@@ -1,0 +1,3506 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "OmegaAuto API",
+        "version": "1.0.0",
+        "description": "API каталога автомобилей OmegaAuto.\n\n**Справочники (Brand, Fuel, Gear, Color, CarStatus):** при создании Car передавайте строковые `name` из enum соответствующих схем — не числовые id.\n\n- `price` — юани (CNY)\n- `power` — л.с.\n- `displacement` — литры (decimal, max 2 цифры / 1 после запятой)\n- **изображения:** только через `POST /cars/` с `Content-Type: multipart/form-data` и полем `images` (см. операцию createCar). JSON без файлов создать авто с фото нельзя. Допускаются `.webp`, `.jpg`, `.jpeg`, `.png`; на сервере сохраняются как `.webp`."
+    },
+    "servers": [
+        {
+            "url": "https://backend.omegaauto.org/api",
+            "description": "Production"
+        },
+        {
+            "url": "http://127.0.0.1:8000/api",
+            "description": "Local"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Brand",
+            "description": "Марки. Допустимые name для поля Car.brand перечислены в схеме Brand.name.enum"
+        },
+        {
+            "name": "Fuel",
+            "description": "Типы топлива. Допустимые name для поля Car.fuel — в Fuel.name.enum"
+        },
+        {
+            "name": "Gear",
+            "description": "Типы КПП. Допустимые name для поля Car.gear — в Gear.name.enum"
+        },
+        {
+            "name": "Color",
+            "description": "Цвета. Допустимые name для поля Car.color — в Color.name.enum"
+        },
+        {
+            "name": "CarStatus",
+            "description": "Статусы. Допустимые name для поля Car.status — в CarStatus.name.enum"
+        },
+        {
+            "name": "Car (admin)",
+            "description": "CRUD автомобилей (IsAdminUser)"
+        },
+        {
+            "name": "Car (client)",
+            "description": "Публичный каталог (AllowAny, только GET)"
+        }
+    ],
+    "paths": {
+        "/brands/": {
+            "get": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Список Brand",
+                "operationId": "listBrand",
+                "parameters": [
+                    {
+                        "name": "only_available",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "description": "Марки с авто в статусах «В продаже» / «Зарезервирован»"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Brand"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Создать Brand",
+                "operationId": "createBrand",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Brand"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden — требуется IsAdminUser"
+                    }
+                }
+            }
+        },
+        "/brands/{id}/": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Получить Brand",
+                "operationId": "retrieveBrand",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Brand"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Обновить Brand",
+                "operationId": "updateBrand",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Brand"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Частично обновить Brand",
+                "operationId": "partialUpdateBrand",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Brand"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Brand"
+                ],
+                "summary": "Удалить Brand",
+                "operationId": "destroyBrand",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/fuels/": {
+            "get": {
+                "tags": [
+                    "Fuel"
+                ],
+                "summary": "Список Fuel",
+                "operationId": "listFuel",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Fuel"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Fuel"
+                ],
+                "summary": "Создать Fuel",
+                "operationId": "createFuel",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Fuel"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden — требуется IsAdminUser"
+                    }
+                }
+            }
+        },
+        "/fuels/{id}/": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Fuel"
+                ],
+                "summary": "Получить Fuel",
+                "operationId": "retrieveFuel",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Fuel"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Fuel"
+                ],
+                "summary": "Обновить Fuel",
+                "operationId": "updateFuel",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Fuel"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Fuel"
+                ],
+                "summary": "Частично обновить Fuel",
+                "operationId": "partialUpdateFuel",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Fuel"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Fuel"
+                ],
+                "summary": "Удалить Fuel",
+                "operationId": "destroyFuel",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/gears/": {
+            "get": {
+                "tags": [
+                    "Gear"
+                ],
+                "summary": "Список Gear",
+                "operationId": "listGear",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Gear"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Gear"
+                ],
+                "summary": "Создать Gear",
+                "operationId": "createGear",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Gear"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden — требуется IsAdminUser"
+                    }
+                }
+            }
+        },
+        "/gears/{id}/": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Gear"
+                ],
+                "summary": "Получить Gear",
+                "operationId": "retrieveGear",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Gear"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Gear"
+                ],
+                "summary": "Обновить Gear",
+                "operationId": "updateGear",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Gear"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Gear"
+                ],
+                "summary": "Частично обновить Gear",
+                "operationId": "partialUpdateGear",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Gear"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Gear"
+                ],
+                "summary": "Удалить Gear",
+                "operationId": "destroyGear",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/colors/": {
+            "get": {
+                "tags": [
+                    "Color"
+                ],
+                "summary": "Список Color",
+                "operationId": "listColor",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Color"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Color"
+                ],
+                "summary": "Создать Color",
+                "operationId": "createColor",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Color"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden — требуется IsAdminUser"
+                    }
+                }
+            }
+        },
+        "/colors/{id}/": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Color"
+                ],
+                "summary": "Получить Color",
+                "operationId": "retrieveColor",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Color"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Color"
+                ],
+                "summary": "Обновить Color",
+                "operationId": "updateColor",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Color"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Color"
+                ],
+                "summary": "Частично обновить Color",
+                "operationId": "partialUpdateColor",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Color"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Color"
+                ],
+                "summary": "Удалить Color",
+                "operationId": "destroyColor",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/statuses/": {
+            "get": {
+                "tags": [
+                    "CarStatus"
+                ],
+                "summary": "Список CarStatus",
+                "operationId": "listCarStatus",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CarStatus"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "CarStatus"
+                ],
+                "summary": "Создать CarStatus",
+                "operationId": "createCarStatus",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CarStatus"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden — требуется IsAdminUser"
+                    }
+                }
+            }
+        },
+        "/statuses/{id}/": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "CarStatus"
+                ],
+                "summary": "Получить CarStatus",
+                "operationId": "retrieveCarStatus",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CarStatus"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "CarStatus"
+                ],
+                "summary": "Обновить CarStatus",
+                "operationId": "updateCarStatus",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CarStatus"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "CarStatus"
+                ],
+                "summary": "Частично обновить CarStatus",
+                "operationId": "partialUpdateCarStatus",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LookupWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CarStatus"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "CarStatus"
+                ],
+                "summary": "Удалить CarStatus",
+                "operationId": "destroyCarStatus",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/cars/": {
+            "get": {
+                "tags": [
+                    "Car (admin)"
+                ],
+                "summary": "Список автомобилей (admin)",
+                "operationId": "listCarsAdmin",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "brand",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Toyota",
+                                "Volkswagen",
+                                "Ford",
+                                "Hyundai",
+                                "BYD",
+                                "Honda",
+                                "Nissan",
+                                "KIA",
+                                "Chevrolet",
+                                "Geely",
+                                "Suzuki",
+                                "Mercedes-Benz",
+                                "BMW",
+                                "Audi",
+                                "Tesla",
+                                "Renault",
+                                "Peugeot",
+                                "Skoda",
+                                "Mazda",
+                                "Subaru",
+                                "Mitsubishi",
+                                "Fiat",
+                                "Jeep",
+                                "Volvo",
+                                "Lexus",
+                                "Dacia",
+                                "Chery",
+                                "Changan",
+                                "Haval",
+                                "Great Wall",
+                                "Isuzu",
+                                "Land Rover",
+                                "Porsche",
+                                "Cadillac",
+                                "Buick",
+                                "GMC",
+                                "Acura",
+                                "Lincoln",
+                                "Citroen",
+                                "Jetour",
+                                "Wuling"
+                            ]
+                        },
+                        "description": "Марка (точное name из Brand)"
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Модель (без учёта регистра)"
+                    },
+                    {
+                        "name": "fuel",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Бензин",
+                                "Дизель",
+                                "Электро",
+                                "Гибрид"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "gear",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "АКПП",
+                                "РКПП",
+                                "Вариатор"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "color",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Белый",
+                                "Серебристый",
+                                "Серый",
+                                "Черный",
+                                "Красный",
+                                "Коричневый",
+                                "Желтый",
+                                "Фиолетовый",
+                                "Синий",
+                                "Оранжевый"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "В продаже",
+                                "Зарезервирован",
+                                "Продан",
+                                "Недоступен"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "year_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "mileage_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "mileage_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "power_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "power_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "displacement_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "displacement_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "price_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "price_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "only_available",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "description": "true — статусы «В продаже» и «Зарезервирован»"
+                    },
+                    {
+                        "name": "ordering",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "brand",
+                                "-brand",
+                                "model",
+                                "-model",
+                                "fuel",
+                                "-fuel",
+                                "color",
+                                "-color",
+                                "gear",
+                                "-gear",
+                                "status",
+                                "-status",
+                                "year",
+                                "-year",
+                                "mileage",
+                                "-mileage",
+                                "power",
+                                "-power",
+                                "displacement",
+                                "-displacement",
+                                "price",
+                                "-price"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CarAdmin"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Car (admin)"
+                ],
+                "summary": "Создать автомобиль (с изображениями — multipart)",
+                "description": "Поля `brand`, `fuel`, `gear`, `color`, `status` — строки `name` из справочников (см. enum в схеме). `price` — в юанях (CNY).\n\n## Создание без изображений\n\n`Content-Type: application/json` и тело по схеме `CarWrite`.\n\n## Создание с изображениями\n\nОбязательно `Content-Type: multipart/form-data` (парсеры Django REST: MultiPartParser / FormParser).\n\n1. Текстовые поля автомобиля — обычные form-поля (`model`, `brand`, `year`, …).\n2. Файлы — повторяющееся поле **`images`** (тип file). Порядок частей = `CarImage.index` (0, 1, 2, …).\n3. При создании для каждого файла вызывается `CarImage.objects.create(..., index=i)`; флаг `public` по умолчанию `true`.\n4. В `application/json` поле `images` передать нельзя — бинарные файлы только через multipart.\n\nПример `curl`:\n\n```bash\ncurl -X POST 'https://backend.omegaauto.org/api/cars/' \\\n  -H 'Cookie: sessionid=<SESSION>' \\\n  -F 'model=Kamiq' \\\n  -F 'brand=Skoda' \\\n  -F 'year=2022' \\\n  -F 'mileage=12000' \\\n  -F 'power=112' \\\n  -F 'displacement=1.5' \\\n  -F 'vin=LSVUE60N7NN017628' \\\n  -F 'price=98500' \\\n  -F 'fuel=Бензин' \\\n  -F 'gear=АКПП' \\\n  -F 'color=Белый' \\\n  -F 'status=В продаже' \\\n  -F 'images=@./0.webp;type=image/webp' \\\n  -F 'images=@./1.webp;type=image/webp' \\\n  -F 'images=@./2.webp;type=image/webp'\n```\n\nДопустимые форматы файлов: `.webp`, `.jpg`, `.jpeg`, `.png`.",
+                "operationId": "createCar",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "description": "JSON — без фото. multipart/form-data — с фото (поле images).",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CarWrite"
+                            },
+                            "example": {
+                                "model": "Kamiq",
+                                "brand": "Skoda",
+                                "year": 2022,
+                                "mileage": 12000,
+                                "power": 112,
+                                "displacement": "1.5",
+                                "vin": "LSVUE60N7NN017628",
+                                "price": 98500,
+                                "fuel": "Бензин",
+                                "gear": "АКПП",
+                                "color": "Белый",
+                                "status": "В продаже"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CarWriteMultipart"
+                            },
+                            "encoding": {
+                                "images": {
+                                    "contentType": "image/webp, image/jpeg, image/png",
+                                    "style": "form",
+                                    "explode": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-codeSamples": [
+                    {
+                        "lang": "curl",
+                        "label": "Создание с изображениями",
+                        "source": "curl -X POST 'https://backend.omegaauto.org/api/cars/' \\\n  -H 'Cookie: sessionid=<SESSION>' \\\n  -F 'model=Kamiq' \\\n  -F 'brand=Skoda' \\\n  -F 'year=2022' \\\n  -F 'mileage=12000' \\\n  -F 'power=112' \\\n  -F 'displacement=1.5' \\\n  -F 'vin=LSVUE60N7NN017628' \\\n  -F 'price=98500' \\\n  -F 'fuel=Бензин' \\\n  -F 'gear=АКПП' \\\n  -F 'color=Белый' \\\n  -F 'status=В продаже' \\\n  -F 'images=@./0.webp;type=image/webp' \\\n  -F 'images=@./1.webp;type=image/webp'"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created. В ответе `images[]` с url, public и index.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CarAdmin"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/cars/{id}/": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Car (admin)"
+                ],
+                "summary": "Получить автомобиль (admin)",
+                "operationId": "retrieveCarAdmin",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CarAdmin"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Car (admin)"
+                ],
+                "summary": "Обновить автомобиль",
+                "operationId": "updateCar",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CarWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CarAdmin"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Car (admin)"
+                ],
+                "summary": "Частично обновить автомобиль",
+                "operationId": "partialUpdateCar",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CarWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CarAdmin"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Car (admin)"
+                ],
+                "summary": "Удалить автомобиль",
+                "operationId": "destroyCar",
+                "security": [
+                    {
+                        "cookieAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/client/cars/": {
+            "get": {
+                "tags": [
+                    "Car (client)"
+                ],
+                "summary": "Публичный каталог автомобилей",
+                "description": "Только GET. Возвращает автомобили со статусами «В продаже» и «Зарезервирован». В images — только public=true. Без vin/created_at/updated_at.",
+                "operationId": "listCarsClient",
+                "parameters": [
+                    {
+                        "name": "brand",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Toyota",
+                                "Volkswagen",
+                                "Ford",
+                                "Hyundai",
+                                "BYD",
+                                "Honda",
+                                "Nissan",
+                                "KIA",
+                                "Chevrolet",
+                                "Geely",
+                                "Suzuki",
+                                "Mercedes-Benz",
+                                "BMW",
+                                "Audi",
+                                "Tesla",
+                                "Renault",
+                                "Peugeot",
+                                "Skoda",
+                                "Mazda",
+                                "Subaru",
+                                "Mitsubishi",
+                                "Fiat",
+                                "Jeep",
+                                "Volvo",
+                                "Lexus",
+                                "Dacia",
+                                "Chery",
+                                "Changan",
+                                "Haval",
+                                "Great Wall",
+                                "Isuzu",
+                                "Land Rover",
+                                "Porsche",
+                                "Cadillac",
+                                "Buick",
+                                "GMC",
+                                "Acura",
+                                "Lincoln",
+                                "Citroen",
+                                "Jetour",
+                                "Wuling"
+                            ]
+                        },
+                        "description": "Марка (точное name из Brand)"
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Модель (без учёта регистра)"
+                    },
+                    {
+                        "name": "fuel",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Бензин",
+                                "Дизель",
+                                "Электро",
+                                "Гибрид"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "gear",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "АКПП",
+                                "РКПП",
+                                "Вариатор"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "color",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Белый",
+                                "Серебристый",
+                                "Серый",
+                                "Черный",
+                                "Красный",
+                                "Коричневый",
+                                "Желтый",
+                                "Фиолетовый",
+                                "Синий",
+                                "Оранжевый"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "year_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "mileage_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "mileage_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "power_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "power_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "displacement_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "displacement_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "price_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "price_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "only_available",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "description": "true — статусы «В продаже» и «Зарезервирован»"
+                    },
+                    {
+                        "name": "ordering",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "brand",
+                                "-brand",
+                                "model",
+                                "-model",
+                                "fuel",
+                                "-fuel",
+                                "color",
+                                "-color",
+                                "gear",
+                                "-gear",
+                                "status",
+                                "-status",
+                                "year",
+                                "-year",
+                                "mileage",
+                                "-mileage",
+                                "power",
+                                "-power",
+                                "displacement",
+                                "-displacement",
+                                "price",
+                                "-price"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "В продаже",
+                                "Зарезервирован",
+                                "Продан",
+                                "Недоступен"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100,
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedCarClient"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client/cars/{id}/": {
+            "get": {
+                "tags": [
+                    "Car (client)"
+                ],
+                "summary": "Получить автомобиль (публично)",
+                "operationId": "retrieveCarClient",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CarClient"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "cookieAuth": {
+                "type": "apiKey",
+                "in": "cookie",
+                "name": "sessionid",
+                "description": "Django session cookie администратора"
+            },
+            "basicAuth": {
+                "type": "http",
+                "scheme": "basic",
+                "description": "Basic auth администратора (если включено)"
+            }
+        },
+        "schemas": {
+            "LookupWrite": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "Brand": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "enum": [
+                            "Toyota",
+                            "Volkswagen",
+                            "Ford",
+                            "Hyundai",
+                            "BYD",
+                            "Honda",
+                            "Nissan",
+                            "KIA",
+                            "Chevrolet",
+                            "Geely",
+                            "Suzuki",
+                            "Mercedes-Benz",
+                            "BMW",
+                            "Audi",
+                            "Tesla",
+                            "Renault",
+                            "Peugeot",
+                            "Skoda",
+                            "Mazda",
+                            "Subaru",
+                            "Mitsubishi",
+                            "Fiat",
+                            "Jeep",
+                            "Volvo",
+                            "Lexus",
+                            "Dacia",
+                            "Chery",
+                            "Changan",
+                            "Haval",
+                            "Great Wall",
+                            "Isuzu",
+                            "Land Rover",
+                            "Porsche",
+                            "Cadillac",
+                            "Buick",
+                            "GMC",
+                            "Acura",
+                            "Lincoln",
+                            "Citroen",
+                            "Jetour",
+                            "Wuling"
+                        ],
+                        "description": "Марка автомобиля"
+                    }
+                }
+            },
+            "Fuel": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "enum": [
+                            "Бензин",
+                            "Дизель",
+                            "Электро",
+                            "Гибрид"
+                        ],
+                        "description": "Тип топлива"
+                    }
+                }
+            },
+            "Gear": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "enum": [
+                            "АКПП",
+                            "РКПП",
+                            "Вариатор"
+                        ],
+                        "description": "Тип трансмиссии"
+                    }
+                }
+            },
+            "Color": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "enum": [
+                            "Белый",
+                            "Серебристый",
+                            "Серый",
+                            "Черный",
+                            "Красный",
+                            "Коричневый",
+                            "Желтый",
+                            "Фиолетовый",
+                            "Синий",
+                            "Оранжевый"
+                        ],
+                        "description": "Цвет"
+                    }
+                }
+            },
+            "CarStatus": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "enum": [
+                            "В продаже",
+                            "Зарезервирован",
+                            "Продан",
+                            "Недоступен"
+                        ],
+                        "description": "Статус автомобиля"
+                    }
+                }
+            },
+            "LookupValue": {
+                "type": "object",
+                "description": "Запись справочника с id (для справки; в Car API используется name)",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "BrandCatalog": {
+                "type": "object",
+                "description": "Текущие значения справочника Brand в БД",
+                "properties": {
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LookupValue"
+                        },
+                        "example": [
+                            {
+                                "id": 1,
+                                "name": "Toyota"
+                            },
+                            {
+                                "id": 2,
+                                "name": "Volkswagen"
+                            },
+                            {
+                                "id": 3,
+                                "name": "Ford"
+                            },
+                            {
+                                "id": 4,
+                                "name": "Hyundai"
+                            },
+                            {
+                                "id": 5,
+                                "name": "BYD"
+                            },
+                            {
+                                "id": 6,
+                                "name": "Honda"
+                            },
+                            {
+                                "id": 7,
+                                "name": "Nissan"
+                            },
+                            {
+                                "id": 8,
+                                "name": "KIA"
+                            },
+                            {
+                                "id": 9,
+                                "name": "Chevrolet"
+                            },
+                            {
+                                "id": 10,
+                                "name": "Geely"
+                            },
+                            {
+                                "id": 11,
+                                "name": "Suzuki"
+                            },
+                            {
+                                "id": 12,
+                                "name": "Mercedes-Benz"
+                            },
+                            {
+                                "id": 13,
+                                "name": "BMW"
+                            },
+                            {
+                                "id": 14,
+                                "name": "Audi"
+                            },
+                            {
+                                "id": 15,
+                                "name": "Tesla"
+                            },
+                            {
+                                "id": 16,
+                                "name": "Renault"
+                            },
+                            {
+                                "id": 17,
+                                "name": "Peugeot"
+                            },
+                            {
+                                "id": 18,
+                                "name": "Skoda"
+                            },
+                            {
+                                "id": 19,
+                                "name": "Mazda"
+                            },
+                            {
+                                "id": 20,
+                                "name": "Subaru"
+                            },
+                            {
+                                "id": 21,
+                                "name": "Mitsubishi"
+                            },
+                            {
+                                "id": 22,
+                                "name": "Fiat"
+                            },
+                            {
+                                "id": 23,
+                                "name": "Jeep"
+                            },
+                            {
+                                "id": 24,
+                                "name": "Volvo"
+                            },
+                            {
+                                "id": 25,
+                                "name": "Lexus"
+                            },
+                            {
+                                "id": 26,
+                                "name": "Dacia"
+                            },
+                            {
+                                "id": 27,
+                                "name": "Chery"
+                            },
+                            {
+                                "id": 28,
+                                "name": "Changan"
+                            },
+                            {
+                                "id": 29,
+                                "name": "Haval"
+                            },
+                            {
+                                "id": 30,
+                                "name": "Great Wall"
+                            },
+                            {
+                                "id": 31,
+                                "name": "Isuzu"
+                            },
+                            {
+                                "id": 32,
+                                "name": "Land Rover"
+                            },
+                            {
+                                "id": 33,
+                                "name": "Porsche"
+                            },
+                            {
+                                "id": 34,
+                                "name": "Cadillac"
+                            },
+                            {
+                                "id": 35,
+                                "name": "Buick"
+                            },
+                            {
+                                "id": 36,
+                                "name": "GMC"
+                            },
+                            {
+                                "id": 37,
+                                "name": "Acura"
+                            },
+                            {
+                                "id": 38,
+                                "name": "Lincoln"
+                            },
+                            {
+                                "id": 39,
+                                "name": "Citroen"
+                            },
+                            {
+                                "id": 42,
+                                "name": "Jetour"
+                            },
+                            {
+                                "id": 43,
+                                "name": "Wuling"
+                            }
+                        ]
+                    }
+                }
+            },
+            "FuelCatalog": {
+                "type": "object",
+                "properties": {
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LookupValue"
+                        },
+                        "example": [
+                            {
+                                "id": 1,
+                                "name": "Бензин"
+                            },
+                            {
+                                "id": 2,
+                                "name": "Дизель"
+                            },
+                            {
+                                "id": 3,
+                                "name": "Электро"
+                            },
+                            {
+                                "id": 4,
+                                "name": "Гибрид"
+                            }
+                        ]
+                    }
+                }
+            },
+            "GearCatalog": {
+                "type": "object",
+                "properties": {
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LookupValue"
+                        },
+                        "example": [
+                            {
+                                "id": 1,
+                                "name": "АКПП"
+                            },
+                            {
+                                "id": 2,
+                                "name": "РКПП"
+                            },
+                            {
+                                "id": 3,
+                                "name": "Вариатор"
+                            }
+                        ]
+                    }
+                }
+            },
+            "ColorCatalog": {
+                "type": "object",
+                "properties": {
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LookupValue"
+                        },
+                        "example": [
+                            {
+                                "id": 1,
+                                "name": "Белый"
+                            },
+                            {
+                                "id": 2,
+                                "name": "Серебристый"
+                            },
+                            {
+                                "id": 3,
+                                "name": "Серый"
+                            },
+                            {
+                                "id": 4,
+                                "name": "Черный"
+                            },
+                            {
+                                "id": 5,
+                                "name": "Красный"
+                            },
+                            {
+                                "id": 6,
+                                "name": "Коричневый"
+                            },
+                            {
+                                "id": 7,
+                                "name": "Желтый"
+                            },
+                            {
+                                "id": 8,
+                                "name": "Фиолетовый"
+                            },
+                            {
+                                "id": 9,
+                                "name": "Синий"
+                            },
+                            {
+                                "id": 12,
+                                "name": "Оранжевый"
+                            }
+                        ]
+                    }
+                }
+            },
+            "CarStatusCatalog": {
+                "type": "object",
+                "properties": {
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LookupValue"
+                        },
+                        "example": [
+                            {
+                                "id": 1,
+                                "name": "В продаже"
+                            },
+                            {
+                                "id": 2,
+                                "name": "Зарезервирован"
+                            },
+                            {
+                                "id": 3,
+                                "name": "Продан"
+                            },
+                            {
+                                "id": 4,
+                                "name": "Недоступен"
+                            }
+                        ]
+                    }
+                }
+            },
+            "CarImage": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URL изображения"
+                    },
+                    "public": {
+                        "type": "boolean"
+                    },
+                    "index": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Порядковый номер"
+                    }
+                }
+            },
+            "CarWrite": {
+                "type": "object",
+                "required": [
+                    "model",
+                    "brand",
+                    "year",
+                    "mileage",
+                    "power",
+                    "displacement",
+                    "price",
+                    "fuel",
+                    "gear",
+                    "color",
+                    "status"
+                ],
+                "properties": {
+                    "model": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "example": "Kamiq"
+                    },
+                    "brand": {
+                        "type": "string",
+                        "enum": [
+                            "Toyota",
+                            "Volkswagen",
+                            "Ford",
+                            "Hyundai",
+                            "BYD",
+                            "Honda",
+                            "Nissan",
+                            "KIA",
+                            "Chevrolet",
+                            "Geely",
+                            "Suzuki",
+                            "Mercedes-Benz",
+                            "BMW",
+                            "Audi",
+                            "Tesla",
+                            "Renault",
+                            "Peugeot",
+                            "Skoda",
+                            "Mazda",
+                            "Subaru",
+                            "Mitsubishi",
+                            "Fiat",
+                            "Jeep",
+                            "Volvo",
+                            "Lexus",
+                            "Dacia",
+                            "Chery",
+                            "Changan",
+                            "Haval",
+                            "Great Wall",
+                            "Isuzu",
+                            "Land Rover",
+                            "Porsche",
+                            "Cadillac",
+                            "Buick",
+                            "GMC",
+                            "Acura",
+                            "Lincoln",
+                            "Citroen",
+                            "Jetour",
+                            "Wuling"
+                        ],
+                        "description": "name из справочника Brand",
+                        "example": "Skoda"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "minimum": 1970,
+                        "example": 2022
+                    },
+                    "mileage": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "example": 12000
+                    },
+                    "power": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Мощность, л.с.",
+                        "example": 112
+                    },
+                    "displacement": {
+                        "type": "string",
+                        "pattern": "^\\d(\\.\\d)?$",
+                        "description": "Объём двигателя, л (decimal max_digits=2, decimal_places=1)",
+                        "example": "1.5"
+                    },
+                    "vin": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "nullable": true,
+                        "example": "LSVUE60N7NN017628"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "description": "Стоимость в юанях (CNY)",
+                        "example": 98500
+                    },
+                    "fuel": {
+                        "type": "string",
+                        "enum": [
+                            "Бензин",
+                            "Дизель",
+                            "Электро",
+                            "Гибрид"
+                        ],
+                        "description": "name из справочника Fuel",
+                        "example": "Бензин"
+                    },
+                    "gear": {
+                        "type": "string",
+                        "enum": [
+                            "АКПП",
+                            "РКПП",
+                            "Вариатор"
+                        ],
+                        "description": "name из справочника Gear",
+                        "example": "АКПП"
+                    },
+                    "color": {
+                        "type": "string",
+                        "enum": [
+                            "Белый",
+                            "Серебристый",
+                            "Серый",
+                            "Черный",
+                            "Красный",
+                            "Коричневый",
+                            "Желтый",
+                            "Фиолетовый",
+                            "Синий",
+                            "Оранжевый"
+                        ],
+                        "description": "name из справочника Color",
+                        "example": "Белый"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "В продаже",
+                            "Зарезервирован",
+                            "Продан",
+                            "Недоступен"
+                        ],
+                        "description": "name из справочника CarStatus",
+                        "example": "В продаже"
+                    }
+                }
+            },
+            "CarWriteMultipart": {
+                "type": "object",
+                "description": "Тело POST /cars/ при загрузке с изображениями. Content-Type: multipart/form-data. Поле images — один или несколько файлов с одним и тем же именем поля `images` (порядок отправки = index).",
+                "required": [
+                    "model",
+                    "brand",
+                    "year",
+                    "mileage",
+                    "power",
+                    "displacement",
+                    "price",
+                    "fuel",
+                    "gear",
+                    "color",
+                    "status"
+                ],
+                "properties": {
+                    "model": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "example": "Kamiq"
+                    },
+                    "brand": {
+                        "type": "string",
+                        "enum": [
+                            "Toyota",
+                            "Volkswagen",
+                            "Ford",
+                            "Hyundai",
+                            "BYD",
+                            "Honda",
+                            "Nissan",
+                            "KIA",
+                            "Chevrolet",
+                            "Geely",
+                            "Suzuki",
+                            "Mercedes-Benz",
+                            "BMW",
+                            "Audi",
+                            "Tesla",
+                            "Renault",
+                            "Peugeot",
+                            "Skoda",
+                            "Mazda",
+                            "Subaru",
+                            "Mitsubishi",
+                            "Fiat",
+                            "Jeep",
+                            "Volvo",
+                            "Lexus",
+                            "Dacia",
+                            "Chery",
+                            "Changan",
+                            "Haval",
+                            "Great Wall",
+                            "Isuzu",
+                            "Land Rover",
+                            "Porsche",
+                            "Cadillac",
+                            "Buick",
+                            "GMC",
+                            "Acura",
+                            "Lincoln",
+                            "Citroen",
+                            "Jetour",
+                            "Wuling"
+                        ],
+                        "example": "Skoda"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "minimum": 1970,
+                        "example": 2022
+                    },
+                    "mileage": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "example": 12000
+                    },
+                    "power": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "example": 112
+                    },
+                    "displacement": {
+                        "type": "string",
+                        "example": "1.5"
+                    },
+                    "vin": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "example": "LSVUE60N7NN017628"
+                    },
+                    "price": {
+                        "type": "integer",
+                        "example": 98500
+                    },
+                    "fuel": {
+                        "type": "string",
+                        "enum": [
+                            "Бензин",
+                            "Дизель",
+                            "Электро",
+                            "Гибрид"
+                        ],
+                        "example": "Бензин"
+                    },
+                    "gear": {
+                        "type": "string",
+                        "enum": [
+                            "АКПП",
+                            "РКПП",
+                            "Вариатор"
+                        ],
+                        "example": "АКПП"
+                    },
+                    "color": {
+                        "type": "string",
+                        "enum": [
+                            "Белый",
+                            "Серебристый",
+                            "Серый",
+                            "Черный",
+                            "Красный",
+                            "Коричневый",
+                            "Желтый",
+                            "Фиолетовый",
+                            "Синий",
+                            "Оранжевый"
+                        ],
+                        "example": "Белый"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "В продаже",
+                            "Зарезервирован",
+                            "Продан",
+                            "Недоступен"
+                        ],
+                        "example": "В продаже"
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "binary"
+                        },
+                        "minItems": 1,
+                        "description": "Файлы изображений (.webp/.jpg/.jpeg/.png). Имя поля формы: images (повторить для каждого файла). Порядок = CarImage.index. JSON-запросом передать нельзя."
+                    }
+                }
+            },
+            "CarAdmin": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "model": {
+                        "type": "string"
+                    },
+                    "brand": {
+                        "type": "string",
+                        "enum": [
+                            "Toyota",
+                            "Volkswagen",
+                            "Ford",
+                            "Hyundai",
+                            "BYD",
+                            "Honda",
+                            "Nissan",
+                            "KIA",
+                            "Chevrolet",
+                            "Geely",
+                            "Suzuki",
+                            "Mercedes-Benz",
+                            "BMW",
+                            "Audi",
+                            "Tesla",
+                            "Renault",
+                            "Peugeot",
+                            "Skoda",
+                            "Mazda",
+                            "Subaru",
+                            "Mitsubishi",
+                            "Fiat",
+                            "Jeep",
+                            "Volvo",
+                            "Lexus",
+                            "Dacia",
+                            "Chery",
+                            "Changan",
+                            "Haval",
+                            "Great Wall",
+                            "Isuzu",
+                            "Land Rover",
+                            "Porsche",
+                            "Cadillac",
+                            "Buick",
+                            "GMC",
+                            "Acura",
+                            "Lincoln",
+                            "Citroen",
+                            "Jetour",
+                            "Wuling"
+                        ]
+                    },
+                    "year": {
+                        "type": "integer"
+                    },
+                    "mileage": {
+                        "type": "integer"
+                    },
+                    "power": {
+                        "type": "integer"
+                    },
+                    "displacement": {
+                        "type": "string",
+                        "example": "1.5"
+                    },
+                    "vin": {
+                        "type": "string"
+                    },
+                    "fuel": {
+                        "type": "string",
+                        "enum": [
+                            "Бензин",
+                            "Дизель",
+                            "Электро",
+                            "Гибрид"
+                        ]
+                    },
+                    "gear": {
+                        "type": "string",
+                        "enum": [
+                            "АКПП",
+                            "РКПП",
+                            "Вариатор"
+                        ]
+                    },
+                    "color": {
+                        "type": "string",
+                        "enum": [
+                            "Белый",
+                            "Серебристый",
+                            "Серый",
+                            "Черный",
+                            "Красный",
+                            "Коричневый",
+                            "Желтый",
+                            "Фиолетовый",
+                            "Синий",
+                            "Оранжевый"
+                        ]
+                    },
+                    "price": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "В продаже",
+                            "Зарезервирован",
+                            "Продан",
+                            "Недоступен"
+                        ]
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CarImage"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "CarClient": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "model": {
+                        "type": "string"
+                    },
+                    "brand": {
+                        "type": "string",
+                        "enum": [
+                            "Toyota",
+                            "Volkswagen",
+                            "Ford",
+                            "Hyundai",
+                            "BYD",
+                            "Honda",
+                            "Nissan",
+                            "KIA",
+                            "Chevrolet",
+                            "Geely",
+                            "Suzuki",
+                            "Mercedes-Benz",
+                            "BMW",
+                            "Audi",
+                            "Tesla",
+                            "Renault",
+                            "Peugeot",
+                            "Skoda",
+                            "Mazda",
+                            "Subaru",
+                            "Mitsubishi",
+                            "Fiat",
+                            "Jeep",
+                            "Volvo",
+                            "Lexus",
+                            "Dacia",
+                            "Chery",
+                            "Changan",
+                            "Haval",
+                            "Great Wall",
+                            "Isuzu",
+                            "Land Rover",
+                            "Porsche",
+                            "Cadillac",
+                            "Buick",
+                            "GMC",
+                            "Acura",
+                            "Lincoln",
+                            "Citroen",
+                            "Jetour",
+                            "Wuling"
+                        ]
+                    },
+                    "year": {
+                        "type": "integer"
+                    },
+                    "mileage": {
+                        "type": "integer"
+                    },
+                    "power": {
+                        "type": "integer"
+                    },
+                    "displacement": {
+                        "type": "string"
+                    },
+                    "fuel": {
+                        "type": "string",
+                        "enum": [
+                            "Бензин",
+                            "Дизель",
+                            "Электро",
+                            "Гибрид"
+                        ]
+                    },
+                    "gear": {
+                        "type": "string",
+                        "enum": [
+                            "АКПП",
+                            "РКПП",
+                            "Вариатор"
+                        ]
+                    },
+                    "color": {
+                        "type": "string",
+                        "enum": [
+                            "Белый",
+                            "Серебристый",
+                            "Серый",
+                            "Черный",
+                            "Красный",
+                            "Коричневый",
+                            "Желтый",
+                            "Фиолетовый",
+                            "Синий",
+                            "Оранжевый"
+                        ]
+                    },
+                    "price": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "В продаже",
+                            "Зарезервирован"
+                        ]
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CarImage"
+                        }
+                    }
+                }
+            },
+            "PaginatedCarClient": {
+                "type": "object",
+                "properties": {
+                    "count": {
+                        "type": "integer"
+                    },
+                    "next": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
+                    },
+                    "previous": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CarClient"
+                        }
+                    }
+                }
+            }
+        },
+        "examples": {
+            "BrandValues": {
+                "value": [
+                    {
+                        "id": 1,
+                        "name": "Toyota"
+                    },
+                    {
+                        "id": 2,
+                        "name": "Volkswagen"
+                    },
+                    {
+                        "id": 3,
+                        "name": "Ford"
+                    },
+                    {
+                        "id": 4,
+                        "name": "Hyundai"
+                    },
+                    {
+                        "id": 5,
+                        "name": "BYD"
+                    },
+                    {
+                        "id": 6,
+                        "name": "Honda"
+                    },
+                    {
+                        "id": 7,
+                        "name": "Nissan"
+                    },
+                    {
+                        "id": 8,
+                        "name": "KIA"
+                    },
+                    {
+                        "id": 9,
+                        "name": "Chevrolet"
+                    },
+                    {
+                        "id": 10,
+                        "name": "Geely"
+                    },
+                    {
+                        "id": 11,
+                        "name": "Suzuki"
+                    },
+                    {
+                        "id": 12,
+                        "name": "Mercedes-Benz"
+                    },
+                    {
+                        "id": 13,
+                        "name": "BMW"
+                    },
+                    {
+                        "id": 14,
+                        "name": "Audi"
+                    },
+                    {
+                        "id": 15,
+                        "name": "Tesla"
+                    },
+                    {
+                        "id": 16,
+                        "name": "Renault"
+                    },
+                    {
+                        "id": 17,
+                        "name": "Peugeot"
+                    },
+                    {
+                        "id": 18,
+                        "name": "Skoda"
+                    },
+                    {
+                        "id": 19,
+                        "name": "Mazda"
+                    },
+                    {
+                        "id": 20,
+                        "name": "Subaru"
+                    },
+                    {
+                        "id": 21,
+                        "name": "Mitsubishi"
+                    },
+                    {
+                        "id": 22,
+                        "name": "Fiat"
+                    },
+                    {
+                        "id": 23,
+                        "name": "Jeep"
+                    },
+                    {
+                        "id": 24,
+                        "name": "Volvo"
+                    },
+                    {
+                        "id": 25,
+                        "name": "Lexus"
+                    },
+                    {
+                        "id": 26,
+                        "name": "Dacia"
+                    },
+                    {
+                        "id": 27,
+                        "name": "Chery"
+                    },
+                    {
+                        "id": 28,
+                        "name": "Changan"
+                    },
+                    {
+                        "id": 29,
+                        "name": "Haval"
+                    },
+                    {
+                        "id": 30,
+                        "name": "Great Wall"
+                    },
+                    {
+                        "id": 31,
+                        "name": "Isuzu"
+                    },
+                    {
+                        "id": 32,
+                        "name": "Land Rover"
+                    },
+                    {
+                        "id": 33,
+                        "name": "Porsche"
+                    },
+                    {
+                        "id": 34,
+                        "name": "Cadillac"
+                    },
+                    {
+                        "id": 35,
+                        "name": "Buick"
+                    },
+                    {
+                        "id": 36,
+                        "name": "GMC"
+                    },
+                    {
+                        "id": 37,
+                        "name": "Acura"
+                    },
+                    {
+                        "id": 38,
+                        "name": "Lincoln"
+                    },
+                    {
+                        "id": 39,
+                        "name": "Citroen"
+                    },
+                    {
+                        "id": 42,
+                        "name": "Jetour"
+                    },
+                    {
+                        "id": 43,
+                        "name": "Wuling"
+                    }
+                ]
+            },
+            "FuelValues": {
+                "value": [
+                    {
+                        "id": 1,
+                        "name": "Бензин"
+                    },
+                    {
+                        "id": 2,
+                        "name": "Дизель"
+                    },
+                    {
+                        "id": 3,
+                        "name": "Электро"
+                    },
+                    {
+                        "id": 4,
+                        "name": "Гибрид"
+                    }
+                ]
+            },
+            "GearValues": {
+                "value": [
+                    {
+                        "id": 1,
+                        "name": "АКПП"
+                    },
+                    {
+                        "id": 2,
+                        "name": "РКПП"
+                    },
+                    {
+                        "id": 3,
+                        "name": "Вариатор"
+                    }
+                ]
+            },
+            "ColorValues": {
+                "value": [
+                    {
+                        "id": 1,
+                        "name": "Белый"
+                    },
+                    {
+                        "id": 2,
+                        "name": "Серебристый"
+                    },
+                    {
+                        "id": 3,
+                        "name": "Серый"
+                    },
+                    {
+                        "id": 4,
+                        "name": "Черный"
+                    },
+                    {
+                        "id": 5,
+                        "name": "Красный"
+                    },
+                    {
+                        "id": 6,
+                        "name": "Коричневый"
+                    },
+                    {
+                        "id": 7,
+                        "name": "Желтый"
+                    },
+                    {
+                        "id": 8,
+                        "name": "Фиолетовый"
+                    },
+                    {
+                        "id": 9,
+                        "name": "Синий"
+                    },
+                    {
+                        "id": 12,
+                        "name": "Оранжевый"
+                    }
+                ]
+            },
+            "CarStatusValues": {
+                "value": [
+                    {
+                        "id": 1,
+                        "name": "В продаже"
+                    },
+                    {
+                        "id": 2,
+                        "name": "Зарезервирован"
+                    },
+                    {
+                        "id": 3,
+                        "name": "Продан"
+                    },
+                    {
+                        "id": 4,
+                        "name": "Недоступен"
+                    }
+                ]
+            },
+            "CreateCar": {
+                "value": {
+                    "model": "Kamiq",
+                    "brand": "Skoda",
+                    "year": 2022,
+                    "mileage": 12000,
+                    "power": 112,
+                    "displacement": "1.5",
+                    "vin": "LSVUE60N7NN017628",
+                    "price": 98500,
+                    "fuel": "Бензин",
+                    "gear": "АКПП",
+                    "color": "Белый",
+                    "status": "В продаже"
+                }
+            }
+        }
+    },
+    "x-lookup-catalogs": {
+        "description": "Справочные значения из БД для полей Car. При POST/PUT/PATCH /cars/ используйте поле name (строка), не id.",
+        "Brand": [
+            {
+                "id": 1,
+                "name": "Toyota"
+            },
+            {
+                "id": 2,
+                "name": "Volkswagen"
+            },
+            {
+                "id": 3,
+                "name": "Ford"
+            },
+            {
+                "id": 4,
+                "name": "Hyundai"
+            },
+            {
+                "id": 5,
+                "name": "BYD"
+            },
+            {
+                "id": 6,
+                "name": "Honda"
+            },
+            {
+                "id": 7,
+                "name": "Nissan"
+            },
+            {
+                "id": 8,
+                "name": "KIA"
+            },
+            {
+                "id": 9,
+                "name": "Chevrolet"
+            },
+            {
+                "id": 10,
+                "name": "Geely"
+            },
+            {
+                "id": 11,
+                "name": "Suzuki"
+            },
+            {
+                "id": 12,
+                "name": "Mercedes-Benz"
+            },
+            {
+                "id": 13,
+                "name": "BMW"
+            },
+            {
+                "id": 14,
+                "name": "Audi"
+            },
+            {
+                "id": 15,
+                "name": "Tesla"
+            },
+            {
+                "id": 16,
+                "name": "Renault"
+            },
+            {
+                "id": 17,
+                "name": "Peugeot"
+            },
+            {
+                "id": 18,
+                "name": "Skoda"
+            },
+            {
+                "id": 19,
+                "name": "Mazda"
+            },
+            {
+                "id": 20,
+                "name": "Subaru"
+            },
+            {
+                "id": 21,
+                "name": "Mitsubishi"
+            },
+            {
+                "id": 22,
+                "name": "Fiat"
+            },
+            {
+                "id": 23,
+                "name": "Jeep"
+            },
+            {
+                "id": 24,
+                "name": "Volvo"
+            },
+            {
+                "id": 25,
+                "name": "Lexus"
+            },
+            {
+                "id": 26,
+                "name": "Dacia"
+            },
+            {
+                "id": 27,
+                "name": "Chery"
+            },
+            {
+                "id": 28,
+                "name": "Changan"
+            },
+            {
+                "id": 29,
+                "name": "Haval"
+            },
+            {
+                "id": 30,
+                "name": "Great Wall"
+            },
+            {
+                "id": 31,
+                "name": "Isuzu"
+            },
+            {
+                "id": 32,
+                "name": "Land Rover"
+            },
+            {
+                "id": 33,
+                "name": "Porsche"
+            },
+            {
+                "id": 34,
+                "name": "Cadillac"
+            },
+            {
+                "id": 35,
+                "name": "Buick"
+            },
+            {
+                "id": 36,
+                "name": "GMC"
+            },
+            {
+                "id": 37,
+                "name": "Acura"
+            },
+            {
+                "id": 38,
+                "name": "Lincoln"
+            },
+            {
+                "id": 39,
+                "name": "Citroen"
+            },
+            {
+                "id": 42,
+                "name": "Jetour"
+            },
+            {
+                "id": 43,
+                "name": "Wuling"
+            }
+        ],
+        "Fuel": [
+            {
+                "id": 1,
+                "name": "Бензин"
+            },
+            {
+                "id": 2,
+                "name": "Дизель"
+            },
+            {
+                "id": 3,
+                "name": "Электро"
+            },
+            {
+                "id": 4,
+                "name": "Гибрид"
+            }
+        ],
+        "Gear": [
+            {
+                "id": 1,
+                "name": "АКПП"
+            },
+            {
+                "id": 2,
+                "name": "РКПП"
+            },
+            {
+                "id": 3,
+                "name": "Вариатор"
+            }
+        ],
+        "Color": [
+            {
+                "id": 1,
+                "name": "Белый"
+            },
+            {
+                "id": 2,
+                "name": "Серебристый"
+            },
+            {
+                "id": 3,
+                "name": "Серый"
+            },
+            {
+                "id": 4,
+                "name": "Черный"
+            },
+            {
+                "id": 5,
+                "name": "Красный"
+            },
+            {
+                "id": 6,
+                "name": "Коричневый"
+            },
+            {
+                "id": 7,
+                "name": "Желтый"
+            },
+            {
+                "id": 8,
+                "name": "Фиолетовый"
+            },
+            {
+                "id": 9,
+                "name": "Синий"
+            },
+            {
+                "id": 12,
+                "name": "Оранжевый"
+            }
+        ],
+        "CarStatus": [
+            {
+                "id": 1,
+                "name": "В продаже"
+            },
+            {
+                "id": 2,
+                "name": "Зарезервирован"
+            },
+            {
+                "id": 3,
+                "name": "Продан"
+            },
+            {
+                "id": 4,
+                "name": "Недоступен"
+            }
+        ]
+    }
+}

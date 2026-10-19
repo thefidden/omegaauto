@@ -171,8 +171,6 @@ import BlockGlass from "../BlockGlass.vue"
     box-sizing: border-box;
     padding: 20px 24px;
     justify-self: center;
-
-
 }
 
 .brands { grid-area: brands; }
