@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "OmegaAuto API",
-    "version": "1.1.0",
-    "description": "REST API каталога автомобилей OmegaAuto.\n\n## Справочники для полей Car\nПри создании/изменении автомобиля поля `brand`, `fuel`, `gear`, `color`, `status` передаются как **строки name** (не числовые id). Допустимые значения — в `enum` схем и в `x-lookup-catalogs` (снимок БД с id и name).\n\n## Изображения\nСоздать авто **с фото**: `POST /cars/` + `multipart/form-data`, поле `images` (несколько файлов с одним именем поля). Управление фото: `/car-images/` (admin).\n\n- `price` — юани (CNY)\n- `power` — л.с.\n- `displacement` — литры\n- форматы изображений: `.webp`, `.jpg`, `.jpeg`, `.png`"
+    "version": "1.2.0",
+    "description": "REST API каталога автомобилей OmegaAuto.\n\n## Справочники для полей Car\nПри создании/изменении автомобиля поля `brand`, `fuel`, `gear`, `color`, `status` передаются как **строки name** (не id). Допустимые значения — в `enum` схем и в `x-lookup-catalogs` (`id` + `name`).\n\n## Изображения\n1. Вместе с новым авто: `POST /cars/` + `multipart/form-data`, поле `images`.\n2. К существующему авто: `POST /car-images/` с полями `car` (UUID), `image`, `index`, `public`.\n\n- `price` — юани (CNY)\n- `power` — л.с.\n- `displacement` — литры\n- форматы: `.webp`, `.jpg`, `.jpeg`, `.png`"
   },
   "servers": [
     {
@@ -18,7 +18,7 @@
   "tags": [
     {
       "name": "Brand",
-      "description": "Справочник марок. name для Car.brand — Brand.name.enum / x-lookup-catalogs.Brand"
+      "description": "Справочник марок. name для Car.brand — в Brand.name.enum / x-lookup-catalogs.Brand"
     },
     {
       "name": "Fuel",
@@ -38,15 +38,15 @@
     },
     {
       "name": "Car (admin)",
-      "description": "CRUD автомобилей, IsAdminUser. Создание с изображениями — multipart."
+      "description": "CRUD автомобилей (IsAdminUser). Создание с фото — multipart images."
     },
     {
       "name": "Car (client)",
-      "description": "Публичный каталог, AllowAny, только GET"
+      "description": "Публичный каталог (AllowAny, только GET)"
     },
     {
       "name": "CarImage",
-      "description": "Изображения, IsAdminUser. Основной upload — POST /cars/ с images."
+      "description": "Изображения (IsAdminUser). Создание: поле car = UUID автомобиля (PrimaryKeyRelatedField)."
     }
   ],
   "paths": {
@@ -1330,7 +1330,7 @@
           "Car (admin)"
         ],
         "summary": "Создать автомобиль (JSON или multipart с images)",
-        "description": "Создать автомобиль.\n\n## Без изображений\n`Content-Type: application/json` — схема `CarWrite`.\n\n## С изображениями (рекомендуемый способ)\n`Content-Type: multipart/form-data`:\n1. Текстовые поля: `model`, `brand`, `year`, `mileage`, `power`, `displacement`, `vin`, `price`, `fuel`, `gear`, `color`, `status`.\n2. Файлы — повторяющееся поле **`images`** (порядок = `CarImage.index`: 0, 1, 2, …).\n3. `brand` / `fuel` / `gear` / `color` / `status` — строки **name** из справочников (см. enum и `x-lookup-catalogs`), не id.\n4. У созданных изображений `public=true` по умолчанию.\n\nПример:\n```bash\ncurl -X POST 'https://backend.omegaauto.org/api/cars/' \\\n  -H 'Cookie: sessionid=<SESSION>' \\\n  -F 'model=Kamiq' \\\n  -F 'brand=Skoda' \\\n  -F 'year=2022' \\\n  -F 'mileage=12000' \\\n  -F 'power=112' \\\n  -F 'displacement=1.5' \\\n  -F 'vin=LSVUE60N7NN017628' \\\n  -F 'price=98500' \\\n  -F 'fuel=Бензин' \\\n  -F 'gear=АКПП' \\\n  -F 'color=Белый' \\\n  -F 'status=В продаже' \\\n  -F 'images=@./0.webp;type=image/webp' \\\n  -F 'images=@./1.webp;type=image/webp'\n```\n\nФорматы файлов: `.webp`, `.jpg`, `.jpeg`, `.png`.\n",
+        "description": "Создать автомобиль.\n\n## Без изображений\n`Content-Type: application/json` — схема `CarWrite`.\n\n## С изображениями\n`Content-Type: multipart/form-data`:\n1. Текстовые поля авто: `model`, `brand`, `year`, `mileage`, `power`, `displacement`, `vin`, `price`, `fuel`, `gear`, `color`, `status`.\n2. Файлы — повторяющееся поле **`images`** (порядок = `CarImage.index`).\n3. `brand` / `fuel` / `gear` / `color` / `status` — строки **name** из справочников (`x-lookup-catalogs`), не id.\n4. У созданных изображений `public=true` по умолчанию.\n\nДополнительно фото к уже существующему авто: `POST /car-images/` с полями `car` (UUID), `index`, `public`, `image`.\n\n```bash\ncurl -X POST 'https://backend.omegaauto.org/api/cars/' \\\n  -H 'Cookie: sessionid=<SESSION>' \\\n  -F 'model=Kamiq' \\\n  -F 'brand=Skoda' \\\n  -F 'year=2022' \\\n  -F 'mileage=12000' \\\n  -F 'power=112' \\\n  -F 'displacement=1.5' \\\n  -F 'vin=LSVUE60N7NN017628' \\\n  -F 'price=98500' \\\n  -F 'fuel=Бензин' \\\n  -F 'gear=АКПП' \\\n  -F 'color=Белый' \\\n  -F 'status=В продаже' \\\n  -F 'images=@./0.webp;type=image/webp' \\\n  -F 'images=@./1.webp;type=image/webp'\n```\n\nФорматы: `.webp`, `.jpg`, `.jpeg`, `.png`.\n",
         "operationId": "createCar",
         "security": [
           {
@@ -1453,7 +1453,7 @@
           "Car (admin)"
         ],
         "summary": "Обновить автомобиль",
-        "description": "Поля как при создании. Вложенный список `images` обрабатывается только в `create`; для фото используйте `/car-images/` или создайте авто с multipart.",
+        "description": "Поля как при создании. Список `images` обрабатывается только в `create`; для добавления фото к существующему авто — `POST /car-images/`.",
         "operationId": "updateCar",
         "security": [
           {
@@ -1893,8 +1893,8 @@
         "tags": [
           "CarImage"
         ],
-        "summary": "Создать изображение (admin)",
-        "description": "Сериализатор: `image`, `public`, `index`. **Предпочтительный способ добавить фото к новому авто — `POST /cars/` с multipart-полем `images`.** Модель требует FK `car` (UUID автомобиля).",
+        "summary": "Создать изображение для автомобиля",
+        "description": "Создать изображение для существующего автомобиля.\n\n`CarImageSerializer` принимает:\n- **`car`** — UUID автомобиля (`PrimaryKeyRelatedField`)\n- **`image`** — файл\n- **`index`** — порядковый номер\n- **`public`** — видимость (по умолчанию true)\n\n`Content-Type: multipart/form-data`.\n\n```bash\ncurl -X POST 'https://backend.omegaauto.org/api/car-images/' \\\n  -H 'Cookie: sessionid=<SESSION>' \\\n  -F 'car=bb266ddc-bfe3-499f-bd82-33b8758976b6' \\\n  -F 'index=0' \\\n  -F 'public=true' \\\n  -F 'image=@./0.webp;type=image/webp'\n```\n",
         "operationId": "createCarImage",
         "security": [
           {
@@ -1914,6 +1914,13 @@
             }
           }
         },
+        "x-codeSamples": [
+          {
+            "lang": "curl",
+            "label": "Добавить фото к авто",
+            "source": "curl -X POST 'https://backend.omegaauto.org/api/car-images/' \\\n  -H 'Cookie: sessionid=<SESSION>' \\\n  -F 'car=bb266ddc-bfe3-499f-bd82-33b8758976b6' \\\n  -F 'index=0' -F 'public=true' \\\n  -F 'image=@./0.webp;type=image/webp'"
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created",
@@ -2028,7 +2035,7 @@
         "tags": [
           "CarImage"
         ],
-        "summary": "Частично обновить изображение (например public/index)",
+        "summary": "Частично обновить изображение",
         "operationId": "partialUpdateCarImage",
         "security": [
           {
@@ -2072,7 +2079,7 @@
         "tags": [
           "CarImage"
         ],
-        "summary": "Удалить изображение (файл на storage удаляется)",
+        "summary": "Удалить изображение",
         "operationId": "destroyCarImage",
         "security": [
           {
@@ -2264,7 +2271,7 @@
       },
       "CarImage": {
         "type": "object",
-        "description": "Поля CarImageSerializer",
+        "description": "Ответ CarImageSerializer",
         "properties": {
           "image": {
             "type": "string",
@@ -2279,16 +2286,28 @@
             "type": "integer",
             "minimum": 0,
             "description": "Порядковый номер"
+          },
+          "car": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID автомобиля (FK)"
           }
         }
       },
       "CarImageWrite": {
         "type": "object",
+        "description": "multipart/form-data для POST/PUT /car-images/. Поле car — UUID существующего автомобиля.",
         "required": [
+          "car",
           "image",
           "index"
         ],
         "properties": {
+          "car": {
+            "type": "string",
+            "format": "uuid",
+            "description": "PrimaryKeyRelatedField → FK Car.id (пример: bb266ddc-bfe3-499f-bd82-33b8758976b6)"
+          },
           "image": {
             "type": "string",
             "format": "binary",
@@ -2307,6 +2326,10 @@
       "CarImageWriteJson": {
         "type": "object",
         "properties": {
+          "car": {
+            "type": "string",
+            "format": "uuid"
+          },
           "public": {
             "type": "boolean"
           },
@@ -2470,7 +2493,7 @@
       },
       "CarWriteMultipart": {
         "type": "object",
-        "description": "multipart/form-data для POST /cars/ с фото. Поле images — один или несколько файлов с именем поля images.",
+        "description": "multipart/form-data для POST /cars/ с фото. Поле images — один или несколько файлов с именем images.",
         "required": [
           "model",
           "brand",
@@ -2626,7 +2649,7 @@
               "format": "binary"
             },
             "minItems": 1,
-            "description": "Файлы изображений; порядок = index. Имя поля формы: images (повторить для каждого файла)."
+            "description": "Файлы изображений; порядок = index. Имя поля формы: images."
           }
         }
       },

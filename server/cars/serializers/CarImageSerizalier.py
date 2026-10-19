@@ -3,7 +3,7 @@ from cars.models import CarImage, Car
 
 
 class CarImageSerializer(serializers.ModelSerializer):
-    car = serializers.PrimaryKeyRelatedField(source = 'car', queryset = Car.objects.all())
+    car = serializers.PrimaryKeyRelatedField(queryset = Car.objects.all())
 
     class Meta:
         model = CarImage
