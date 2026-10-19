@@ -19,8 +19,7 @@ import BlockGlass from "../BlockGlass.vue"
             <img :src="EarthIcon" alt=""/>
             <div class="name">Автомобили любых производителей</div>
             <div class="description">
-                <span>Подберём автомобиль любой марки: китайской,</span>
-                <span>европейской, японской, корейской или другой</span>
+                <span>Подберём автомобиль любой марки: китайской, европейской, японской, корейской или другой</span>
             </div>
         </block-glass>
 
@@ -28,8 +27,7 @@ import BlockGlass from "../BlockGlass.vue"
             <img :src="ShieldIcon" alt=""/>
             <div class="name">Юридическая и техническая проверка</div>
             <div class="description">
-                <span>Проверим историю, документы</span>
-                <span>и техническое состояние автомобиля</span>
+                <span>Проверим историю, документы и техническое состояние автомобиля</span>
             </div>
         </block-glass>
 
@@ -37,8 +35,7 @@ import BlockGlass from "../BlockGlass.vue"
             <img :src="SearchIcon" alt=""/>
             <div class="name">Тщательный подбор под запросы</div>
             <div class="description">
-                <span>Подберём автомобиль нужной марки,</span>
-                <span>модели и комплектации</span>
+                <span>Подберём автомобиль нужной марки, модели и комплектации</span>
             </div>
         </block-glass>
 
@@ -46,8 +43,7 @@ import BlockGlass from "../BlockGlass.vue"
             <img :src="DeliveryIcon" alt=""/>
             <div class="name">Сопровождение до получения</div>
             <div class="description">
-                <span>Организуем процесс покупки, доставки</span>
-                <span>и передачи автомобиля вам</span>
+                <span>Организуем процесс покупки, доставки и передачи автомобиля вам</span>
             </div>
         </block-glass>
     </div>
