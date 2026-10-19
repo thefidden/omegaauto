@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CarFrontView from "../../assets/car-front-view.png"
+import CarFrontView from "../../assets/car-front-view.webp"
 import BlockGlass from "../BlockGlass.vue";
 import BlockGlassButton from "../BlockGlassButton.vue";
 import TelegramIcon from "../../assets/telegram.svg"

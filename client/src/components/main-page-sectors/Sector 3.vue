@@ -3,7 +3,7 @@ import EarthIcon from "../../assets/earth.svg"
 import SearchIcon from "../../assets/search.svg"
 import ShieldIcon from "../../assets/shield.svg"
 import DeliveryIcon from "../../assets/delivery.svg"
-import CarHighAngleView from "../../assets/car-high-angle-view.png"
+import CarHighAngleView from "../../assets/car-high-angle-view.webp"
 import BlockGlass from "../BlockGlass.vue"
 </script>
 

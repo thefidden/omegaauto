@@ -3,7 +3,7 @@
 import chinaMap from "../../assets/china-map.svg";
 import russiaMap from "../../assets/russia-map.svg";
 import lineGradient from "../../assets/line-gradient.svg";
-import carSideView from "../../assets/car-side-view.png";
+import carSideView from "../../assets/car-side-view.webp";
 import BlockGlass from "../BlockGlass.vue";
 import BlockGlassButton from "../BlockGlassButton.vue";
 import { useRouter } from "vue-router";
