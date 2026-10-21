@@ -7,7 +7,8 @@ from utils import set_car_prices
 
 class CarWriteSerializer(serializers.ModelSerializer):
     model = serializers.CharField(max_length = 50)
-    year = serializers.IntegerField(min_value = 1970)
+    year = serializers.IntegerField(source = 'release_date.year', read_only = True)
+    release_date = serializers.DateTimeField()
     mileage = serializers.IntegerField(min_value = 0)
     power = serializers.IntegerField(min_value = 0)
     displacement = serializers.DecimalField(max_digits = 2, decimal_places = 1)
@@ -29,7 +30,7 @@ class CarWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
         fields = (
-            'model', 'brand', 'year', 'mileage', 'power', 'displacement', 'vin',
+            'model', 'brand', 'release_date', 'year', 'mileage', 'power', 'displacement', 'vin',
             'price_cny', 'fuel', 'gear', 'color', 'status', 'images', 'created_at', 'updated_at'
         )
 
@@ -53,7 +54,7 @@ class CarWriteSerializer(serializers.ModelSerializer):
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
 
-            if {'price_cny', 'year', 'fuel', 'power', 'displacement'} & set(validated_data):
+            if {'price_cny', 'release_date', 'fuel', 'power', 'displacement'} & set(validated_data):
                 set_car_prices(instance)
 
             instance.save()

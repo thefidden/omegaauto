@@ -9,10 +9,6 @@ from django.db import transaction
 from cars.models import Car, CarImage
 from currencies import convert
 
-# Если месяц выпуска неизвестен — по международным правилам принимается 1 июля.
-DEFAULT_MANUFACTURE_MONTH = 7
-
-
 def get_image_upload_path(instance: CarImage, filename) -> str:
     ext = os.path.splitext(filename)[1].lower()
     if ext not in {'.jpg', '.jpeg', '.png', '.webp'}:
@@ -28,14 +24,13 @@ def get_car_age(car: Car, as_of: datetime.date | None = None) -> int:
     Пример: выпуск ноябрь 2018 → 3 полных года с 15.11.2021 (категория «от 3 до 5»),
     5 полных лет с 15.11.2023 (категория «старше 5»).
 
-    Месяц берётся из car.manufacture_month, если поле есть и задано;
-    иначе — июль (DEFAULT_MANUFACTURE_MONTH).
+    Год и месяц берутся из car.release_date.
     """
     as_of = as_of or datetime.date.today()
-    month = getattr(car, 'manufacture_month', None) or DEFAULT_MANUFACTURE_MONTH
+    release = car.release_date
 
-    age = as_of.year - car.year
-    if (as_of.month, as_of.day) < (month, 15):
+    age = as_of.year - release.year
+    if (as_of.month, as_of.day) < (release.month, 15):
         age -= 1
 
     return max(age, 0)

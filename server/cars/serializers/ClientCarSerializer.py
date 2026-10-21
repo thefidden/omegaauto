@@ -13,6 +13,7 @@ class ClientCarSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source = 'status.name', read_only = True)
     brand = serializers.CharField(source = 'brand.name', read_only = True)
     images = serializers.SerializerMethodField(read_only = True)
+    year = serializers.IntegerField(source = 'release_date.year', read_only = True)
     price_total_rub = serializers.SerializerMethodField()
 
     class Meta:

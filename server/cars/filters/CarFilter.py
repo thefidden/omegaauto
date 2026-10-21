@@ -22,8 +22,12 @@ class CarFilter(django_filters.FilterSet):
         field_name = 'status', queryset = CarStatus.objects.all(), to_field_name = 'name', label = 'Статус'
     )
 
-    year_min = django_filters.NumberFilter(field_name = 'year', lookup_expr = 'gte', label = 'Год выпуска, мин')
-    year_max = django_filters.NumberFilter(field_name = 'year', lookup_expr = 'lte', label = 'Год выпуска, макс')
+    year_min = django_filters.NumberFilter(
+        field_name = 'release_date', lookup_expr = 'year__gte', label = 'Год выпуска, мин'
+    )
+    year_max = django_filters.NumberFilter(
+        field_name = 'release_date', lookup_expr = 'year__lte', label = 'Год выпуска, макс'
+    )
 
     mileage_min = django_filters.NumberFilter(field_name = 'mileage', lookup_expr = 'gte', label = 'Пробег, мин')
     mileage_max = django_filters.NumberFilter(field_name = 'mileage', lookup_expr = 'lte', label = 'Пробег, макс')
@@ -38,8 +42,12 @@ class CarFilter(django_filters.FilterSet):
         field_name = 'displacement', lookup_expr = 'lte', label = 'Объем двигателя, макс'
     )
 
-    price_min = django_filters.NumberFilter(field_name = 'price_total_rub', lookup_expr = 'gte', label = 'Стоимость, мин')
-    price_max = django_filters.NumberFilter(field_name = 'price_total_rub', lookup_expr = 'lte', label = 'Стоимость, макс')
+    price_min = django_filters.NumberFilter(
+        field_name = 'price_total_rub', lookup_expr = 'gte', label = 'Стоимость, мин'
+    )
+    price_max = django_filters.NumberFilter(
+        field_name = 'price_total_rub', lookup_expr = 'lte', label = 'Стоимость, макс'
+    )
 
     only_available = django_filters.BooleanFilter(method = 'filter_only_available', label = 'Только доступные')
 
@@ -51,7 +59,7 @@ class CarFilter(django_filters.FilterSet):
             ('color__name', 'color'),
             ('gear__name', 'gear'),
             ('status__name', 'status'),
-            ('year', 'year'),
+            ('release_date', 'year'),
             ('mileage', 'mileage'),
             ('power', 'power'),
             ('displacement', 'displacement'),

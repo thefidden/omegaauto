@@ -9,7 +9,7 @@ class Car(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
 
     model = models.CharField(max_length = 50, verbose_name = 'Модель')
-    year = models.PositiveSmallIntegerField(verbose_name = 'Год выпуска')
+    release_date = models.DateTimeField(verbose_name = 'Дата выпуска')
     mileage = models.PositiveIntegerField(verbose_name = 'Пробег')
     power = models.PositiveIntegerField(verbose_name = 'Мощность, л.с.')
     displacement = models.DecimalField(max_digits = 2, decimal_places = 1, verbose_name = 'Объем двигателя')
@@ -34,7 +34,7 @@ class Car(models.Model):
     class Meta:
         verbose_name = 'Автомобиль'
         verbose_name_plural = 'Автомобили'
-        ordering = ('brand', 'model', 'year', 'mileage', 'updated_at')
+        ordering = ('brand', 'model', 'release_date', 'mileage', 'updated_at')
 
     def __str__(self):
         return f'{self.brand} {self.model}'

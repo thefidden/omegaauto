@@ -25,16 +25,16 @@ class CarImageInline(admin.TabularInline):
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):
     list_display = (
-        'brand', 'model', 'year', 'mileage', 'power', 'displacement', 'fuel', 'gear', 'color', 'status',
+        'brand', 'model', 'release_date', 'mileage', 'power', 'displacement', 'fuel', 'gear', 'color', 'status',
         'price_cny', 'created_at'
     )
     list_filter = (
-        'brand', 'model', 'year', 'mileage', 'power', 'displacement', 'fuel', 'gear', 'color', 'status',
+        'brand', 'model', 'release_date', 'mileage', 'power', 'displacement', 'fuel', 'gear', 'color', 'status',
         'price_cny', 'created_at'
     )
     search_fields = ('brand', 'model')
     inlines = (CarImageInline,)
-    ordering = ('-created_at', 'brand', 'year', 'mileage')
+    ordering = ('-created_at', 'brand', 'release_date', 'mileage')
 
 
 @admin.register(Brand)
