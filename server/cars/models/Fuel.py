@@ -9,7 +9,7 @@ class Fuel(models.Model):
     class Meta:
         verbose_name = 'Вид топлива'
         verbose_name_plural = 'Виды топлива'
-        ordering = ['name']
+        ordering = ('name',)
 
     def __str__(self) -> str:
         return f'{self.name}'

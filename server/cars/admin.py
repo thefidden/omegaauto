@@ -26,11 +26,11 @@ class CarImageInline(admin.TabularInline):
 class CarAdmin(admin.ModelAdmin):
     list_display = (
         'brand', 'model', 'year', 'mileage', 'power', 'displacement', 'fuel', 'gear', 'color', 'status',
-        'price', 'created_at'
+        'price_cny', 'created_at'
     )
     list_filter = (
         'brand', 'model', 'year', 'mileage', 'power', 'displacement', 'fuel', 'gear', 'color', 'status',
-        'price', 'created_at'
+        'price_cny', 'created_at'
     )
     search_fields = ('brand', 'model')
     inlines = (CarImageInline,)

@@ -20,7 +20,7 @@ class CarImage(models.Model):
     class Meta:
         verbose_name = 'Изображение автомобиля'
         verbose_name_plural = 'Изображения автомобилей'
-        ordering = ['car', 'index']
+        ordering = ('car', 'index')
 
     def __str__(self):
         return f'Изображение для {self.car.brand} {self.car.model}'

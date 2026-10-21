@@ -47,8 +47,8 @@ const orderings: Array<{
 	name: string,
 	value: CarListOrdering
 }> = [
-	{ name: 'Стоимость (по возрастанию)', value: 'price' },
-	{ name: 'Стоимость (по убыванию)', value: '-price' },
+	{ name: 'Стоимость (по возрастанию)', value: 'price_total_rub' },
+	{ name: 'Стоимость (по убыванию)', value: '-price_total_rub' },
 	{ name: 'Пробег, км. (по возрастанию)', value: 'mileage' },
 	{ name: 'Пробег, км. (по убыванию)', value: '-mileage' },
 	{ name: 'Год (по возрастанию)', value: 'year' },

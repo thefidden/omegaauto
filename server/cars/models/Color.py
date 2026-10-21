@@ -9,7 +9,7 @@ class Color(models.Model):
     class Meta:
         verbose_name = 'Цвет'
         verbose_name_plural = 'Цвета'
-        ordering = ['name']
+        ordering = ('name',)
 
     def __str__(self) -> str:
         return f'{self.name}'

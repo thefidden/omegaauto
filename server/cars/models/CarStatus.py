@@ -9,7 +9,7 @@ class CarStatus(models.Model):
     class Meta:
         verbose_name = 'Статус автомобиля'
         verbose_name_plural = 'Статусы автомобилей'
-        ordering = ['name']
+        ordering = ('name',)
 
     def __str__(self):
         return f'{self.name}'

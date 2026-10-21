@@ -7,3 +7,4 @@ from .CarStatusSerializer import CarStatusSerializer
 from .CarReadSerializer import CarReadSerializer
 from .CarWriteSerializer import CarWriteSerializer
 from .ClientCarSerializer import ClientCarSerializer
+from .ModelSerializer import ModelSerializer

@@ -123,7 +123,7 @@ onUnmounted(() => {
 						:fuel="car.fuel"
 						:gear="car.gear"
 						:color="car.color"
-						:price="car.price"
+						:price_total_rub="car.price_total_rub"
 						:status="car.status"
 						:images="car.images"
 					/>

@@ -84,7 +84,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'storages',
-    'cars',
+    'cars.apps.CarsConfig',
     'telegram_bot',
     'django_daisy',
     'django.contrib.admin',

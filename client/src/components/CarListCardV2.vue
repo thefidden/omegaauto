@@ -7,7 +7,7 @@ import { computed } from "vue";
 const props = defineProps<Car>()
 
 const priceFormatted = computed(() =>
-	new Intl.NumberFormat("ru-RU").format(Number(props.price))
+	new Intl.NumberFormat("ru-RU").format(Number(props.price_total_rub))
 )
 
 const getBrandLogoHref = (brand: string): string => {
@@ -60,7 +60,7 @@ const getBrandLogoHref = (brand: string): string => {
 				<span>{{ props.color }}</span>
 			</text>
 
-			<span class="price" style="grid-area: price"><b>{{ priceFormatted }} ¥</b></span>
+			<span class="price" style="grid-area: price"><b>{{ priceFormatted }} ₽</b></span>
 		</div>
 
 		<div class="brand-logo__container">

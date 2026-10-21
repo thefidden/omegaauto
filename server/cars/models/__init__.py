@@ -5,3 +5,4 @@ from .Fuel import Fuel
 from .Gear import Gear
 from .CarStatus import CarStatus
 from .Car import Car
+from .Model import Model

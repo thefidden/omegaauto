@@ -38,8 +38,8 @@ class CarFilter(django_filters.FilterSet):
         field_name = 'displacement', lookup_expr = 'lte', label = 'Объем двигателя, макс'
     )
 
-    price_min = django_filters.NumberFilter(field_name = 'price', lookup_expr = 'gte', label = 'Стоимость, мин')
-    price_max = django_filters.NumberFilter(field_name = 'price', lookup_expr = 'lte', label = 'Стоимость, макс')
+    price_min = django_filters.NumberFilter(field_name = 'price_total_rub', lookup_expr = 'gte', label = 'Стоимость, мин')
+    price_max = django_filters.NumberFilter(field_name = 'price_total_rub', lookup_expr = 'lte', label = 'Стоимость, макс')
 
     only_available = django_filters.BooleanFilter(method = 'filter_only_available', label = 'Только доступные')
 
@@ -55,7 +55,7 @@ class CarFilter(django_filters.FilterSet):
             ('mileage', 'mileage'),
             ('power', 'power'),
             ('displacement', 'displacement'),
-            ('price', 'price')
+            ('price_total_rub', 'price_total_rub')
         ),
         field_labels = {
             'brand': 'Марка (по возрастанию)',
@@ -88,8 +88,8 @@ class CarFilter(django_filters.FilterSet):
             'displacement': 'Объем, л. (по возрастанию)',
             '-displacement': 'Объем, л. (по убыванию)',
 
-            'price': 'Стоимость (по возрастанию)',
-            '-price': 'Стоимость (по убыванию)'
+            'price_total_rub': 'Стоимость (по возрастанию)',
+            '-price_total_rub': 'Стоимость (по убыванию)'
         }
     )
 

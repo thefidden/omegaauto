@@ -49,7 +49,7 @@ const carSpecs = computed(() => [
 	{ key: 'gear', label: 'Трансмиссия', value: car.value?.gear },
 	{ key: 'color', label: 'Цвет', value: car.value?.color },
 	{ key: 'fuel', label: 'Топливо', value: car.value?.fuel },
-	{ key: 'price', label: '', value: `${ numberFormatted(car.value?.price || 0) } ¥` },
+	{ key: 'price', label: '', value: `${ numberFormatted(car.value?.price_total_rub || 0) } ₽` },
 ])
 </script>
 

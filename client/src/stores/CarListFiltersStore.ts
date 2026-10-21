@@ -9,7 +9,7 @@ export type CarListOrdering =
     | 'displacement' | '-displacement'
     | 'mileage' | '-mileage'
     | 'power' | '-power'
-    | 'price' | '-price'
+    | 'price_total_rub' | '-price_total_rub'
 
 export const useCarListFilters = defineStore('car-list-filters', {
     state: (): CarListFilterSet => ({

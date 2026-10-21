@@ -9,7 +9,7 @@ class Gear(models.Model):
     class Meta:
         verbose_name = 'Коробка передач'
         verbose_name_plural = 'Коробки передач'
-        ordering = ['name']
+        ordering = ('name',)
 
     def __str__(self) -> str:
         return f'{self.name}'

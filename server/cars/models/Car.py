@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 
+
 class Car(models.Model):
     objects = models.Manager()
 
@@ -13,7 +14,7 @@ class Car(models.Model):
     power = models.PositiveIntegerField(verbose_name = 'Мощность, л.с.')
     displacement = models.DecimalField(max_digits = 2, decimal_places = 1, verbose_name = 'Объем двигателя')
     vin = models.CharField(max_length = 20, verbose_name = 'VIN-номер', blank = True)
-    price = models.PositiveIntegerField(verbose_name = 'Стоимость')
+    price_cny = models.PositiveIntegerField(verbose_name = 'Стоимость в юанях')
 
     brand = models.ForeignKey('Brand', on_delete = models.PROTECT, related_name = 'cars', verbose_name = 'Марка')
     fuel = models.ForeignKey('Fuel', on_delete = models.PROTECT, related_name = 'cars', verbose_name = 'Топливо')

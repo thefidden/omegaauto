@@ -9,7 +9,7 @@ class Brand(models.Model):
     class Meta:
         verbose_name = 'Бренд'
         verbose_name_plural = 'Бренды'
-        ordering = ['name']
+        ordering = ('name',)
 
     def __str__(self) -> str:
         return f'{self.name}'

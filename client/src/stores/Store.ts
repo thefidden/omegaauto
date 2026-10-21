@@ -16,7 +16,7 @@ export const useStore = defineStore('store', {
             'displacement', '-displacement',
             'mileage', '-mileage',
             'power', '-power',
-            'price', '-price'
+            'price_total_rub', '-price_total_rub'
         ] as CarListOrdering[],
         car: null as Car | null,
         carID: '',

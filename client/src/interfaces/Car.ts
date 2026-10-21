@@ -13,5 +13,5 @@ export interface Car {
     color: string,
     status: string,
     images: CarImage[],
-    price: number
+    price_total_rub: number
 }
