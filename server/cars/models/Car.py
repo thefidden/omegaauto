@@ -14,7 +14,13 @@ class Car(models.Model):
     power = models.PositiveIntegerField(verbose_name = 'Мощность, л.с.')
     displacement = models.DecimalField(max_digits = 2, decimal_places = 1, verbose_name = 'Объем двигателя')
     vin = models.CharField(max_length = 20, verbose_name = 'VIN-номер', blank = True)
+
     price_cny = models.PositiveIntegerField(verbose_name = 'Стоимость в юанях')
+    price_rub = models.PositiveIntegerField(verbose_name = 'Стоимость в рублях', default = 0)
+    price_poshlina_rub = models.PositiveIntegerField(verbose_name = 'Стоимость пошлины для автомобиля в рублях', default = 0)
+    price_sbor_rub = models.PositiveIntegerField(verbose_name = 'Стоимость таможенного сбора для автомобиля в рублях', default = 0)
+    price_util_rub = models.PositiveIntegerField(verbose_name = 'Стоимость утилизационного сбора для автомобиля в рублях', default = 0)
+    price_total_rub = models.PositiveIntegerField(verbose_name = 'Итоговая стоимость для автомобиля в рублях', default = 0)
 
     brand = models.ForeignKey('Brand', on_delete = models.PROTECT, related_name = 'cars', verbose_name = 'Марка')
     fuel = models.ForeignKey('Fuel', on_delete = models.PROTECT, related_name = 'cars', verbose_name = 'Топливо')

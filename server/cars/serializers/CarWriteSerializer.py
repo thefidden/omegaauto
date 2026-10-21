@@ -2,8 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from cars.models import Car, CarImage, Brand, Fuel, Gear, Color, CarStatus
-from currencies import convert
-from utils import get_car_poshlina, get_car_sbor, get_car_util
+from utils import set_car_prices
 
 
 class CarWriteSerializer(serializers.ModelSerializer):
@@ -39,6 +38,7 @@ class CarWriteSerializer(serializers.ModelSerializer):
 
         with transaction.atomic():
             car = Car(**validated_data)
+            set_car_prices(car)
             car.save()
 
             for index, image in enumerate(images):
@@ -46,4 +46,22 @@ class CarWriteSerializer(serializers.ModelSerializer):
 
         return car
 
+    def update(self, instance: Car, validated_data: dict) -> Car:
+        images = validated_data.pop('images', [])
 
+        with transaction.atomic():
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+
+            if {'price_cny', 'year', 'fuel', 'power', 'displacement'} & set(validated_data):
+                set_car_prices(instance)
+
+            instance.save()
+
+            if images:
+                CarImage.objects.filter(car = instance).delete()
+
+                for index, image in enumerate(images):
+                    CarImage.objects.create(car = instance, image = image, index = index)
+
+        return instance

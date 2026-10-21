@@ -270,3 +270,17 @@ def get_car_total_price(car: Car) -> int:
     price_util: int = get_car_util(car)
 
     return price_car_rub + price_poshlina + price_sbor + price_util
+
+def set_car_prices(car: Car) -> Car:
+    car.price_rub = convert(car.price_cny, 'CNY', 'RUB')
+    car.price_poshlina_rub = get_car_poshlina(car)
+    car.price_sbor_rub = get_car_sbor(car)
+    car.price_util_rub = get_car_util(car)
+    car.price_total_rub = (
+        car.price_rub
+        + car.price_poshlina_rub
+        + car.price_sbor_rub
+        + car.price_util_rub
+    )
+
+    return car
