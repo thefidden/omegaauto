@@ -2,9 +2,8 @@ from typing import Any
 
 from django.core.management.base import BaseCommand
 
-import currencies
 from cars.models import Car
-from utils import get_car_poshlina, get_car_sbor, get_car_util
+from utils import set_car_prices
 
 
 class Command(BaseCommand):
@@ -16,16 +15,7 @@ class Command(BaseCommand):
 
         for ordinal, car in enumerate(cars, start = 1):
             car: Car = car
-            car.price_rub = currencies.convert(car.price_cny, 'CNY', 'RUB')
-            car.price_poshlina_rub = get_car_poshlina(car)
-            car.price_sbor_rub = get_car_sbor(car)
-            car.price_util_rub = get_car_util(car)
-            car.price_total_rub = (
-                    car.price_rub
-                    + car.price_poshlina_rub
-                    + car.price_sbor_rub
-                    + car.price_util_rub
-            )
+            set_car_prices(car)
             car.save(update_fields = (
                 'price_rub', 'price_poshlina_rub', 'price_sbor_rub', 'price_util_rub', 'price_total_rub'
             ))

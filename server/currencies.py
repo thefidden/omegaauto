@@ -20,8 +20,7 @@ _rates: dict[str, float] = {'EUR': 0.0, 'CNY': 0.0, 'RUB': 1.0}
 _lock = threading.Lock()
 _started = False
 
-
-def _load_rates_from_cbr() -> None:
+def load_rates_from_cbr() -> None:
     response = requests.get(CBR_URL, timeout = 10)
     response.raise_for_status()
     response.encoding = 'windows-1251'
@@ -47,7 +46,7 @@ def get_rates() -> dict[str, float]:
         current = dict(_rates)
 
     if current['EUR'] <= 0 or current['CNY'] <= 0:
-        _load_rates_from_cbr()
+        load_rates_from_cbr()
         with _lock:
             current = dict(_rates)
 
@@ -96,7 +95,7 @@ def _should_run_updater() -> bool:
 def _update_loop() -> None:
     while True:
         try:
-            _load_rates_from_cbr()
+            load_rates_from_cbr()
             logger.info('Currency rates updated: %s', get_rates())
         except Exception:
             logger.exception('Failed to update currency rates')

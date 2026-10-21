@@ -1,5 +1,10 @@
+import logging
 import os
 import datetime
+import threading
+from time import sleep
+
+from django.db import transaction
 
 from cars.models import Car, CarImage
 from currencies import convert
@@ -36,7 +41,7 @@ def get_car_age(car: Car, as_of: datetime.date | None = None) -> int:
     return max(age, 0)
 
 
-def get_car_poshlina(car: Car) -> float:
+def get_car_poshlina(car: Car) -> int:
     """Функция расчета пошлины автомобиля в RUB"""
 
     result_eur: float = 0
@@ -77,7 +82,8 @@ def get_car_poshlina(car: Car) -> float:
     elif car_engine in {'Электро'}:
         result_eur = car_price_eur * 0.15
 
-    return convert(int(result_eur), 'EUR', 'RUB')
+    return int(convert(result_eur, 'EUR', 'RUB'))
+
 
 def get_car_sbor(car: Car) -> int:
     """Функция расчета таможенного сбора автомобиля в RUB"""
@@ -93,6 +99,7 @@ def get_car_sbor(car: Car) -> int:
     elif car_price_rub <= 5_500_000:  return 21_344
     elif car_price_rub <= 10_000_000: return 49_240
     else:                             return 73_860
+
 
 def get_car_util(car: Car) -> int:
     """Функция расчета утильсбора автомобиля в RUB"""
@@ -271,16 +278,17 @@ def get_car_total_price(car: Car) -> int:
 
     return price_car_rub + price_poshlina + price_sbor + price_util
 
+
 def set_car_prices(car: Car) -> Car:
-    car.price_rub = convert(car.price_cny, 'CNY', 'RUB')
+    car.price_rub = int(convert(car.price_cny, 'CNY', 'RUB'))
     car.price_poshlina_rub = get_car_poshlina(car)
     car.price_sbor_rub = get_car_sbor(car)
     car.price_util_rub = get_car_util(car)
     car.price_total_rub = (
-        car.price_rub
-        + car.price_poshlina_rub
-        + car.price_sbor_rub
-        + car.price_util_rub
+            car.price_rub
+            + car.price_poshlina_rub
+            + car.price_sbor_rub
+            + car.price_util_rub
     )
 
     return car
