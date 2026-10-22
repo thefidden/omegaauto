@@ -13,6 +13,7 @@ import CarListFilters from "../components/CarListFilters.vue";
 import CarListCardV2 from "../components/CarListCardV2.vue";
 import { useColorMode } from "@vueuse/core";
 import { navigateToHash } from "../utils/navigateToHash.ts";
+import { getBrandLogoHref } from "../utils/brandLogos.ts";
 
 import Arrow from "../assets/svg-light/arrow.svg";
 import FilterIcon from "../assets/svg-light/filter.svg";
@@ -64,15 +65,9 @@ const closeFilters = () => {
 	filtersOpen.value = false
 }
 
-const getBrandLogoHref = (): string => {
-	const extension = brand.value?.toLowerCase() === "great wall" ? "png" : "svg"
-	return new URL(
-		colorMode.value === 'dark'
-			? `../assets/car-logos-light/${ brand.value?.toLowerCase() }.${ extension }`
-			: `../assets/car-logos-dark/${ brand.value?.toLowerCase() }.${ extension }`,
-		import.meta.url
-	).href
-}
+const brandLogoHref = computed(() =>
+	brand.value ? getBrandLogoHref(brand.value, colorMode.value === 'dark') : ''
+)
 
 watch(() => route.query, () => {
 	filters.fetchFromRouteQuery()
@@ -96,7 +91,7 @@ onUnmounted(() => {
 					 class="cell heading cell-heading-animation"
 		>
 			<span class="heading__title"><b>Автомобили {{ brand }}</b></span>
-			<img class="heading__logo" :src="getBrandLogoHref()" :alt="`${brand} logo`" />
+			<img class="heading__logo" :src="brandLogoHref" :alt="`${brand} logo`" />
 		</block-glass>
 
 		<div class="car-list__actions">

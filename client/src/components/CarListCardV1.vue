@@ -3,6 +3,12 @@
 import BlockGlassButton from "./BlockGlassButton.vue";
 import type { Car } from "../interfaces/Car.ts";
 import { computed } from "vue";
+import { useColorMode } from "@vueuse/core";
+import { getBrandLogoHref } from "../utils/brandLogos.ts";
+
+const colorMode = useColorMode({
+	modes: { dark: 'dark', light: 'light' }
+})
 
 const props = defineProps<Car>()
 
@@ -10,10 +16,9 @@ const priceFormatted = computed(() =>
 	new Intl.NumberFormat("ru-RU").format(Number(props.price_total_rub))
 )
 
-const getBrandLogoHref = (brand: string): string => {
-	const extension = brand.toLowerCase() === "great wall" ? "png" : "svg"
-	return new URL(`../assets/car-logos/${ brand.toLowerCase() }.${ extension }`, import.meta.url).href
-}
+const brandLogoHref = computed(() =>
+	getBrandLogoHref(props.brand, colorMode.value === 'dark')
+)
 </script>
 
 <template>
@@ -46,7 +51,7 @@ const getBrandLogoHref = (brand: string): string => {
 
 		<div class="brand-logo__container">
 			<img class="brand-logo__img"
-				 :src="getBrandLogoHref(props.brand)"
+				 :src="brandLogoHref"
 				 :alt="`${props.brand} logo`"
 			/>
 		</div>

@@ -8,6 +8,7 @@ import { useStore } from "../../stores/Store.ts";
 import LoadingAnimation from "../LoadingAnimation.vue";
 import { useCarListFilters } from "../../stores/CarListFiltersStore.ts";
 import { useColorMode } from "@vueuse/core";
+import { getBrandLogoHref } from "../../utils/brandLogos.ts";
 
 import Arrow from "../../assets/svg-light/arrow.svg"
 import ArrowDark from "../../assets/svg-dark/arrow.svg"
@@ -26,15 +27,7 @@ const brandsPerPage = 10
 const brandListPage = ref(0)
 const brandListPages = computed(() => Math.floor(brands.value.length / brandsPerPage) + 1)
 
-const getBrandLogoHref = (brand: string): string => {
-	const extension = brand.toLowerCase() === "great wall" ? "png" : "svg"
-	return new URL(
-		colorMode.value === 'dark'
-			? `../../assets/car-logos-light/${ brand.toLowerCase() }.${ extension }`
-			: `../../assets/car-logos-dark/${ brand.toLowerCase() }.${ extension }`,
-		import.meta.url
-	).href
-}
+const brandLogo = (brand: string) => getBrandLogoHref(brand, colorMode.value === 'dark')
 
 const goToBrand = (brand: string) => {
 	flushFilterSet()
@@ -63,12 +56,12 @@ const goToBrand = (brand: string) => {
 						>
 							{{ brand }}
 							<div class="image-frame">
-								<img :src="getBrandLogoHref(brand)" :alt="`${brand} logo`" />
+								<img :src="brandLogo(brand)" :alt="`${brand} logo`" />
 							</div>
 
 							<div class="brand-logo__blurred__container">
 								<img class="brand-logo__blurred__img"
-									 :src="getBrandLogoHref(brand)"
+									 :src="brandLogo(brand)"
 									 :alt="`${brand} logo`"
 								/>
 							</div>
