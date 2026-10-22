@@ -37,7 +37,7 @@
     background-color: var(--background-color);
     border: 1px solid var(--color-secondary-50);
 
-    box-shadow: inset 0 0 10px 1px var(--color-secondary-50);
+    box-shadow: inset 0 0 10px 1px var(--color-secondary-30);
     mix-blend-mode: darken;
 
     pointer-events: none;
@@ -52,7 +52,7 @@
 
     border-radius: inherit;
 
-    box-shadow: 0 0 20px 1px rgba(222, 220, 228, .4);
+    box-shadow: 0 0 5px 1px var(--color-secondary-10);
     mix-blend-mode: darken;
 
     pointer-events: none;
@@ -67,21 +67,21 @@
 
 @media (max-width: 900px) {
     .block-glass {
-        --background-color: rgba(222, 220, 228, 0.07);
-        background-color: rgba(8, 8, 12, 0.24);
+        --background-color: var(--color-secondary-7);
+        background-color: var(--color-primary-20);
     }
 
     .block-glass::before {
         background:
-            linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
+            linear-gradient(135deg, var(--color-secondary-10), var(--color-secondary-5)),
             var(--background-color);
-        border-color: rgba(222, 220, 228, 0.46);
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), inset 0 0 18px rgba(222, 220, 228, 0.14);
+        border-color: var(--color-secondary-50);
+        box-shadow: inset 0 1px 1px var(--color-secondary-20), inset 0 0 18px var(--color-secondary-10);
         mix-blend-mode: normal;
     }
 
     .block-glass::after {
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18), 0 0 20px rgba(222, 220, 228, 0.2);
+        box-shadow: 0 12px 30px var(--color-primary-20), 0 0 20px var(--color-secondary-20);
         mix-blend-mode: normal;
     }
 }

@@ -3,119 +3,117 @@
 </script>
 
 <template>
-    <button type="button" class="block-glass-button">
-        <slot/>
-    </button>
+	<button type="button" class="block-glass-button">
+		<slot />
+	</button>
 </template>
 
 <style scoped>
 .block-glass-button {
-    --background-color: #00000000;
+	--background-color: #00000000;
 
-    position: relative;
-    
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	position: relative;
 
-    border-radius: 30px;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    appearance: none;
-    color: inherit;
-    font: inherit;
-    text-align: inherit;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
-    isolation: isolate;
-    background-color: transparent;
+	border-radius: 30px;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	appearance: none;
+	color: inherit;
+	font: inherit;
+	text-align: inherit;
 
-    backdrop-filter: blur(13px);
+	isolation: isolate;
+	background-color: transparent;
+
+	backdrop-filter: blur(13px);
 }
 
 .block-glass-button::before {
-    content: "";
+	content: "";
 
-    position: absolute;
-    inset: 0;
+	position: absolute;
+	inset: 0;
 
-    border-radius: inherit;
+	border-radius: inherit;
 
-    background-color: var(--background-color);
-    border: 1px solid var(--color-secondary-60);
+	background-color: var(--background-color);
+	border: 1px solid var(--color-secondary-50);
 
-    box-shadow: inset 0 0 10px 1px var(--color-secondary-60);
+	box-shadow: inset 0 0 10px 1px var(--color-secondary-20);
 
-    transition: background-color 0.3s ease-out;
-    will-change: background-color;
+	transition: background-color 0.3s ease-out;
+	will-change: background-color;
 
-    pointer-events: none;
-    z-index: -1;
+	pointer-events: none;
+	z-index: -1;
 }
 
 .block-glass-button::after {
-    content: "";
+	content: "";
 
-    position: absolute;
-    inset: 0;
+	position: absolute;
+	inset: 0;
 
-    border-radius: inherit;
+	border-radius: inherit;
 
-    box-shadow: 0 0 20px 1px #DEDCE480;
-    mix-blend-mode: darken;
+	box-shadow: 0 0 5px 1px var(--color-secondary-10);
+	mix-blend-mode: darken;
 
-    pointer-events: none;
-    z-index: -2;
+	pointer-events: none;
+	z-index: -2;
 }
 
 .block-glass-button:hover {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .block-glass-button:hover::before {
-    background-color: var(--color-secondary-7);
+	background-color: var(--color-secondary-7);
 }
 
 .block-glass-button:focus-visible {
-    outline: 2px solid var(--color-secondary-70);
-    outline-offset: 4px;
+	outline: 2px solid var(--color-secondary-70);
+	outline-offset: 4px;
 }
 
 .block-glass-button:disabled {
-    cursor: default;
-    opacity: 0.48;
+	cursor: default;
+	opacity: 0.48;
 }
 
 .block-glass-button:disabled:hover::before {
-    background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
-        var(--background-color);
+	background: linear-gradient(135deg, var(--color-secondary-10), var(--color-secondary-5)),
+	var(--background-color);
 }
 
 @media (max-width: 1250px) {
-    .block-glass-button {
-        background-color: var(--color-primary-60);
-    }
+	.block-glass-button {
+		background-color: var(--color-primary-60);
+	}
 }
 
 @media (max-width: 900px) {
-    .block-glass-button {
-        --background-color: rgba(222, 220, 228, 0.07);
-        background-color: rgba(8, 8, 12, 0.24);
-    }
+	.block-glass-button {
+		--background-color: var(--color-secondary-7);
+		background-color: var(--color-primary-20);
+	}
 
-    .block-glass-button::before {
-        background:
-            linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
-            var(--background-color);
-        border-color: rgba(222, 220, 228, 0.46);
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), inset 0 0 18px rgba(222, 220, 228, 0.14);
-        mix-blend-mode: normal;
-    }
+	.block-glass-button::before {
+		background: linear-gradient(135deg, var(--color-secondary-10), var(--color-secondary-5)),
+		var(--background-color);
+		border-color: var(--color-secondary-50);
+		box-shadow: inset 0 1px 1px var(--color-secondary-20), inset 0 0 18px var(--color-secondary-10);
+		mix-blend-mode: normal;
+	}
 
-    .block-glass-button::after {
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18), 0 0 20px rgba(222, 220, 228, 0.2);
-        mix-blend-mode: normal;
-    }
+	.block-glass-button::after {
+		box-shadow: 0 12px 30px var(--color-primary-20), 0 0 20px var(--color-secondary-20);
+		mix-blend-mode: normal;
+	}
 }
 </style>

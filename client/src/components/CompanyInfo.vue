@@ -50,7 +50,7 @@ defineExpose({ open })
 	inset: 0;
 	z-index: 10000;
 
-	background-color: rgba(0, 0, 0, .5);
+	background-color: var(--color-primary-50);
 	backdrop-filter: blur(10px);
 
 	user-select: none;
@@ -92,7 +92,7 @@ defineExpose({ open })
 	width: 40px;
 	height: 40px;
 
-	color: white;
+	color: var(--color-secondary);
 	background-color: transparent;
 
 	box-sizing: border-box;
@@ -108,7 +108,7 @@ defineExpose({ open })
 .company-info__close span {
 	position: absolute;
 
-	background-color: white;
+	background-color: var(--color-secondary);
 
 	box-sizing: border-box;
 	border-radius: 2px;

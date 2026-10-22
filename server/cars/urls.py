@@ -1,8 +1,5 @@
-from rest_framework.viewsets import ModelViewSet
-
 from cars.views import GearViewSet, FuelViewSet, ColorViewSet, BrandViewSet, CarStatusViewSet, ClientCarViewSet, \
-    CarImageViewSet
-from cars.views import CarViewSet
+    CarImageViewSet, CarViewSet, ModelViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()

@@ -8,11 +8,17 @@ import Navigation from "./components/Navigation.vue";
 import { useRoute } from "vue-router";
 import { takePendingScroll } from "./router.ts";
 import { smoothScrollTo } from "./utils/smoothScroll.ts";
+import BlockGlassButton from "./components/BlockGlassButton.vue";
+import SunIcon from "./assets/svg-light/sun.svg"
+import MoonIconDark from "./assets/svg-dark/moon.svg"
+import { useTheme } from "./composables/useTheme.ts";
 
 const store = useStore()
 const route = useRoute()
 const { fetchAvailableBrands, fetchGears, fetchFuels, fetchColors, fetchCar } = store
 const { carID } = storeToRefs(store)
+
+const { isDark, toggleTheme } = useTheme()
 
 async function scrollToHash(hash: string) {
 	if (!hash) return
@@ -66,7 +72,7 @@ watch(
 
 <template>
 	<div class="app">
-		<div class="ellipses" aria-hidden="true">
+		<div class="ellipses" aria-hidden="true" v-if="isDark">
 			<div class="ellipse" v-for="n in 7" :key="n"></div>
 		</div>
 
@@ -84,12 +90,36 @@ watch(
 		</div>
 
 		<Header class="header-animation" />
+
+		<block-glass-button class="toggle-theme-button" @click="toggleTheme" aria-label="Переключить тему">
+			<img :src="isDark ? SunIcon : MoonIconDark" alt="" />
+		</block-glass-button>
 	</div>
 
 	<div class="noise" />
 </template>
 
 <style scoped>
+.toggle-theme-button {
+	position: fixed;
+	right: 30px;
+	top: 30px;
+
+	width: 60px;
+	height: 60px;
+}
+
+.toggle-theme-button img {
+	height: 25px;
+	width: 25px;
+}
+
+@media (max-width: 900px) {
+	.toggle-theme-button {
+		display: none;
+	}
+}
+
 .page-enter-from,
 .page-leave-to {
 	opacity: 0;

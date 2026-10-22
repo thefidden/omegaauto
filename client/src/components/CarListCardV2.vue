@@ -3,6 +3,11 @@
 import BlockGlassButton from "./BlockGlassButton.vue";
 import type { Car } from "../interfaces/Car.ts";
 import { computed } from "vue";
+import { useColorMode } from "@vueuse/core";
+
+const colorMode = useColorMode({
+	modes: { dark: 'dark', light: 'light' }
+})
 
 const props = defineProps<Car>()
 
@@ -12,7 +17,12 @@ const priceFormatted = computed(() =>
 
 const getBrandLogoHref = (brand: string): string => {
 	const extension = brand.toLowerCase() === "great wall" ? "png" : "svg"
-	return new URL(`../assets/car-logos/${ brand.toLowerCase() }.${ extension }`, import.meta.url).href
+	return new URL(
+		colorMode.value === 'dark'
+			? `../assets/car-logos-light/${ brand.toLowerCase() }.${ extension }`
+			: `../assets/car-logos-dark/${ brand.toLowerCase() }.${ extension }`,
+		import.meta.url
+	).href
 }
 </script>
 
@@ -91,8 +101,8 @@ const getBrandLogoHref = (brand: string): string => {
 }
 
 .image-frame {
-	flex: 0 1 330px;
-	width: 330px;
+	flex: 0 1 500px;
+	width: 500px;
 	max-width: 100%;
 	min-width: 0;
 	height: 100%;
@@ -105,10 +115,11 @@ const getBrandLogoHref = (brand: string): string => {
 	display: block;
 	width: 100%;
 	height: 100%;
-	/* cover не искажает пропорции: кадрирует, но не растягивает */
+
 	object-fit: cover;
 	object-position: center;
 
+	will-change: scale;
 	transition: scale .3s ease-out;
 }
 
@@ -137,7 +148,7 @@ const getBrandLogoHref = (brand: string): string => {
 }
 
 .name {
-	color: white;
+	color: var(--color-secondary);
 	align-content: start;
 	font-size: 24px;
 	min-width: 0;
@@ -145,7 +156,7 @@ const getBrandLogoHref = (brand: string): string => {
 }
 
 .price {
-	color: white;
+	color: var(--color-secondary);
 	align-content: end;
 	font-size: 24px;
 }

@@ -1,46 +1,81 @@
 <script setup lang="ts">
 
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import BlockGlass from "./BlockGlass.vue";
 import ButtonShiftingTextWithIcon from "./ButtonShiftingTextWithIcon.vue";
-import TelegramIcon from '../assets/telegram.svg'
-import VkIcon from '../assets/vk.svg'
-import HomeIcon from '../assets/home.svg'
-import CarIcon from '../assets/car.svg'
-import InfoIcon from '../assets/info.svg'
 import { useRouter } from "vue-router";
 import CompanyInfo from "./CompanyInfo.vue";
+import { useColorMode } from "@vueuse/core";
+import { useTheme } from "../composables/useTheme.ts";
+import { navigateToHash } from "../utils/navigateToHash.ts";
+
+import TelegramIcon from '../assets/svg-light/telegram.svg'
+import VkIcon from '../assets/svg-light/vk.svg'
+import HomeIcon from '../assets/svg-light/home.svg'
+import CarIcon from '../assets/svg-light/car.svg'
+import InfoIcon from '../assets/svg-light/info.svg'
+import SunIcon from '../assets/svg-light/sun.svg'
+
+import TelegramIconDark from '../assets/svg-dark/telegram.svg'
+import VkIconDark from '../assets/svg-dark/vk.svg'
+import HomeIconDark from '../assets/svg-dark/home.svg'
+import CarIconDark from '../assets/svg-dark/car.svg'
+import InfoIconDark from '../assets/svg-dark/info.svg'
+import MoonIconDark from '../assets/svg-dark/moon.svg'
+
+const colorMode = useColorMode({
+	modes: { dark: 'dark', light: 'light' }
+})
+const { isDark, toggleTheme } = useTheme()
 
 const router = useRouter()
 
 type Page = { name: string, icon: string, action: () => void }
 type Social = { name: string, href: string, icon: string }
 
-const pages: Page[] = [
+const pages = computed((): Page[] => [
 	{
 		name: 'Главная',
-		icon: HomeIcon,
+		icon: colorMode.value === 'dark' ? HomeIcon : HomeIconDark,
 		action: () => router.push({ name: 'main' })
 	},
 	{
 		name: 'Каталог',
-		icon: CarIcon,
-		action: () => router.push({ name: 'main', hash: '#brand-selection' })
+		icon: colorMode.value === 'dark' ? CarIcon : CarIconDark,
+		action: () => navigateToHash(router, '#brand-selection')
 	},
 	{
 		name: 'О нас',
-		icon: InfoIcon,
+		icon: colorMode.value === 'dark' ? InfoIcon : InfoIconDark,
 		action: () => companyInfo.value?.open()
 	}
-]
+])
 
-const socials: Social[] = [
-	{ name: 'Telegram', href: 'https://t.me/+cL3IltxijBNiNjcy', icon: TelegramIcon },
-	{ name: 'ВКонтакте', href: 'https://vk.ru/omegaautogroup', icon: VkIcon }
-]
+const socials = computed((): Social[] => [
+	{
+		name: 'Telegram',
+		href: 'https://t.me/+cL3IltxijBNiNjcy',
+		icon: colorMode.value === 'dark' ? TelegramIcon : TelegramIconDark
+	},
+	{
+		name: 'ВКонтакте',
+		href: 'https://vk.ru/omegaautogroup',
+		icon: colorMode.value === 'dark' ? VkIcon : VkIconDark
+	}
+])
+
+const themeMenuItem = computed(() => ({
+	name: isDark.value ? 'Светлая тема' : 'Тёмная тема',
+	icon: isDark.value ? SunIcon : MoonIconDark,
+}))
 
 const companyInfo = ref<InstanceType<typeof CompanyInfo> | null>(null)
 const menuOpen = ref(false)
+
+function onToggleTheme() {
+	toggleTheme()
+	menuOpen.value = false
+}
 </script>
 
 <template>
@@ -117,6 +152,16 @@ const menuOpen = ref(false)
 					>{{ social.name }}
 					</button-shifting-text-with-icon>
 				</section>
+
+				<section>
+					<span class="menu-heading">Оформление</span>
+					<button-shifting-text-with-icon
+						:icon="themeMenuItem.icon"
+						icon-alt=""
+						@click="onToggleTheme"
+					>{{ themeMenuItem.name }}
+					</button-shifting-text-with-icon>
+				</section>
 			</block-glass>
 		</Teleport>
 
@@ -150,7 +195,7 @@ const menuOpen = ref(false)
 .omega-auto {
 	font-size: 20px;
 	font-weight: 700;
-	color: rgba(255, 255, 255, 1);
+	color: var(--color-secondary);
 	cursor: pointer;
 }
 
@@ -169,7 +214,7 @@ const menuOpen = ref(false)
 	.header {
 		width: calc(100vw - 48px);
 		padding-inline: 30px;
-		background-color: rgba(8, 8, 12, 0.38) !important;
+		background-color: var(--color-primary-40) !important;
 	}
 }
 
@@ -184,7 +229,7 @@ const menuOpen = ref(false)
 		height: 60px;
 		padding: 8px 12px 8px 20px;
 		transform: none;
-		background-color: rgba(8, 8, 12, 0.48) !important;
+		background-color: var(--color-primary-50) !important;
 		box-sizing: border-box;
 	}
 
@@ -232,7 +277,7 @@ const menuOpen = ref(false)
 		overflow-y: auto;
 		padding: 20px;
 		box-sizing: border-box;
-		background-color: rgba(8, 8, 12, .44) !important;
+		background-color: var(--color-primary-40) !important;
 		backdrop-filter: blur(28px) saturate(80%);
 	}
 

@@ -2,9 +2,19 @@
 import { nextTick, onBeforeUnmount, ref, watch, type ComponentPublicInstance } from "vue";
 import BlockGlass from "./BlockGlass.vue";
 import TextIconButton from "./TextIconButton.vue";
-import ArrowIcon from "../assets/angle-arrow-down.svg"
-import TickIcon from "../assets/tick.svg"
-import CrossIcon from "../assets/cross.svg"
+import { useColorMode } from "@vueuse/core";
+
+import ArrowIcon from "../assets/svg-light/angle-arrow-down.svg"
+import TickIcon from "../assets/svg-light/tick.svg"
+import CrossIcon from "../assets/svg-light/cross.svg"
+
+import ArrowIconDark from "../assets/svg-dark/angle-arrow-down.svg"
+import TickIconDark from "../assets/svg-dark/tick.svg"
+import CrossIconDark from "../assets/svg-dark/cross.svg"
+
+const colorMode = useColorMode({
+	modes: { dark: 'dark', light: 'light' }
+})
 
 const props = withDefaults(
 	defineProps<{
@@ -139,7 +149,7 @@ defineExpose({ value })
 				</div>
 			</Transition>
 
-			<img :src="ArrowIcon" alt="arrow" :style="{
+			<img :src="colorMode === 'dark' ? ArrowIcon : ArrowIconDark" alt="arrow" :style="{
 				rotate: props.isOpen ? '180deg' : '0deg'
 			}" />
 		</div>
@@ -155,10 +165,16 @@ defineExpose({ value })
 				@click.stop
 			>
 				<div class="values__scroll">
-					<text-icon-button :icon="CrossIcon" @click="setValue(null)">Сбросить</text-icon-button>
+					<text-icon-button
+						:icon="colorMode === 'dark' ? CrossIcon : CrossIconDark"
+						@click="setValue(null)"
+					>
+						Сбросить
+					</text-icon-button>
+
 					<text-icon-button
 						v-for="valueFor in values"
-						:icon="valueFor === value ? TickIcon : ''"
+						:icon="valueFor === value ? (colorMode === 'dark' ? TickIcon : TickIconDark) : ''"
 						@click="setValue(valueFor)"
 					>
 						{{ valueFor }}
@@ -241,7 +257,7 @@ defineExpose({ value })
 	-webkit-overflow-scrolling: touch;
 
 	scrollbar-width: thin;
-	scrollbar-color: rgba(255, 255, 255, .7) transparent;
+	scrollbar-color: var(--color-secondary-70) transparent;
 }
 
 .values__scroll::-webkit-scrollbar {
@@ -253,7 +269,7 @@ defineExpose({ value })
 }
 
 .values__scroll::-webkit-scrollbar-thumb {
-	background: rgba(255, 255, 255, .7);
+	background: var(--color-secondary-70);
 	border-radius: 999px;
 }
 

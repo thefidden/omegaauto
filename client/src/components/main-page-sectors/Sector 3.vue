@@ -1,22 +1,43 @@
 <script setup lang="ts">
-import EarthIcon from "../../assets/earth.svg"
-import SearchIcon from "../../assets/search.svg"
-import ShieldIcon from "../../assets/shield.svg"
-import DeliveryIcon from "../../assets/delivery.svg"
-import CarHighAngleView from "../../assets/car-high-angle-view.webp"
 import BlockGlass from "../BlockGlass.vue"
+
+import CarHighAngleView from "../../assets/webp/car-high-angle-view-dark.webp"
+import CarHighAngleViewLight from "../../assets/webp/car-high-angle-view-light.webp"
+
+
+import EarthIcon from "../../assets/svg-light/earth.svg"
+import SearchIcon from "../../assets/svg-light/search.svg"
+import ShieldIcon from "../../assets/svg-light/shield.svg"
+import DeliveryIcon from "../../assets/svg-light/delivery.svg"
+
+import EarthIconDark from "../../assets/svg-dark/earth.svg"
+import SearchIconDark from "../../assets/svg-dark/search.svg"
+import ShieldIconDark from "../../assets/svg-dark/shield.svg"
+import DeliveryIconDark from "../../assets/svg-dark/delivery.svg"
+import { useColorMode } from "@vueuse/core";
+
+const colorMode = useColorMode({
+	modes: { dark: 'dark', light: 'light' }
+})
 </script>
 
 <template>
     <div class="sector3">
-        <img class="carHighAngleView" :src="CarHighAngleView" alt="" aria-hidden="true" v-for="index in 2" :key="index"/>
+        <img
+			class="carHighAngleView"
+			:src="colorMode === 'dark' ? CarHighAngleView : CarHighAngleViewLight"
+			alt=""
+			aria-hidden="true"
+			v-for="index in 2"
+			:key="index"
+		/>
 
-        <block-glass class="cell heading" style="--background-color: var(--color-secondary-20);">
+        <block-glass class="cell heading">
             Наши преимущества
         </block-glass>
 
         <block-glass class="cell brands">
-            <img :src="EarthIcon" alt=""/>
+            <img :src="colorMode === 'dark' ? EarthIcon : EarthIconDark" alt=""/>
             <div class="name">Автомобили любых производителей</div>
             <div class="description">
                 <span>Подберём автомобиль любой марки: китайской, европейской, японской, корейской или другой</span>
@@ -24,7 +45,7 @@ import BlockGlass from "../BlockGlass.vue"
         </block-glass>
 
         <block-glass class="cell review">
-            <img :src="ShieldIcon" alt=""/>
+            <img :src="colorMode === 'dark' ? ShieldIcon : ShieldIconDark" alt=""/>
             <div class="name">Юридическая и техническая проверка</div>
             <div class="description">
                 <span>Проверим историю, документы и техническое состояние автомобиля</span>
@@ -32,7 +53,7 @@ import BlockGlass from "../BlockGlass.vue"
         </block-glass>
 
         <block-glass class="cell search">
-            <img :src="SearchIcon" alt=""/>
+            <img :src="colorMode === 'dark' ? SearchIcon : SearchIconDark" alt=""/>
             <div class="name">Тщательный подбор под запросы</div>
             <div class="description">
                 <span>Подберём автомобиль нужной марки, модели и комплектации</span>
@@ -40,7 +61,7 @@ import BlockGlass from "../BlockGlass.vue"
         </block-glass>
 
         <block-glass class="cell escort">
-            <img :src="DeliveryIcon" alt=""/>
+            <img :src="colorMode === 'dark' ? DeliveryIcon : DeliveryIconDark" alt=""/>
             <div class="name">Сопровождение до получения</div>
             <div class="description">
                 <span>Организуем процесс покупки, доставки и передачи автомобиля вам</span>
@@ -124,7 +145,7 @@ import BlockGlass from "../BlockGlass.vue"
     font-weight: 700;
     font-size: clamp(18px, 1.7vw, 24px);
     line-height: 1.25;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-secondary-90);
 
     overflow-wrap: break-word;
     word-break: normal;
@@ -143,7 +164,7 @@ import BlockGlass from "../BlockGlass.vue"
 
     font-weight: 400;
     font-size: clamp(16px, 1.5vw, 22px);
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-secondary-70);
 
     overflow-wrap: break-word;
     word-break: normal;
@@ -159,10 +180,8 @@ import BlockGlass from "../BlockGlass.vue"
 
     font-weight: 700;
     font-size: clamp(28px, 3vw, 40px);
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-secondary-90);
     text-align: center;
-
-	background-color: var(--color-primary-30);
 
     display: flex;
     justify-content: center;

@@ -8,22 +8,41 @@ import { storeToRefs } from "pinia";
 import BlockGlassButton from "../components/BlockGlassButton.vue";
 import LoadingAnimation from "../components/LoadingAnimation.vue";
 import TextIconButton from "../components/TextIconButton.vue";
-import TelegramIcon from "../assets/telegram.svg";
-import VkIcon from "../assets/vk.svg";
-import PhoneIcon from "../assets/phone.svg";
-import ArrowIcon from "../assets/arrow.svg";
 import { useStore } from "../stores/Store.ts";
 import { useRouter } from "vue-router";
+import { useColorMode } from "@vueuse/core";
+
+import TelegramIcon from "../assets/svg-light/telegram.svg";
+import VkIcon from "../assets/svg-light/vk.svg";
+import PhoneIcon from "../assets/svg-light/phone.svg";
+import ArrowIcon from "../assets/svg-light/arrow.svg";
+
+import TelegramIconDark from "../assets/svg-dark/telegram.svg";
+import VkIconDark from "../assets/svg-dark/vk.svg";
+import PhoneIconDark from "../assets/svg-dark/phone.svg";
+import ArrowIconDark from "../assets/svg-dark/arrow.svg";
+
+const colorMode = useColorMode({
+	modes: { dark: 'dark', light: 'light' }
+})
 
 const router = useRouter()
 
 const store = useStore()
 const { car, carLoading } = storeToRefs(store)
 
-const socials = [
-	{ name: 'Telegram', href: 'https://t.me/omegaautogroup?direct', icon: TelegramIcon },
-	{ name: 'ВКонтакте', href: 'https://vk.me/omegaautogroup', icon: VkIcon }
-]
+const socials = computed(() => [
+	{
+		name: 'Telegram',
+		href: 'https://t.me/omegaautogroup?direct',
+		icon: colorMode.value === 'dark' ? TelegramIcon : TelegramIconDark
+	},
+	{
+		name: 'ВКонтакте',
+		href: 'https://vk.me/omegaautogroup',
+		icon: colorMode.value === 'dark' ? VkIcon : VkIconDark
+	}
+])
 const phones = [
 	{ label: '+7 (932) 301-89-98', href: 'tel:+79323018998' },
 	{ label: '+7 (902) 602-22-77', href: 'tel:+79026022277' },
@@ -58,7 +77,12 @@ const carSpecs = computed(() => [
 
 	<template v-else>
 		<div class="carPage">
-			<TextIconButton class="button__go-back" :icon="ArrowIcon" icon-alt="Arrow" @click="goBack">
+			<TextIconButton
+				class="button__go-back"
+				:icon="colorMode === 'dark' ? ArrowIcon : ArrowIconDark"
+				icon-alt="Arrow"
+				@click="goBack"
+			>
 				К списку автомобилей
 			</TextIconButton>
 
@@ -149,7 +173,7 @@ const carSpecs = computed(() => [
 							<TextIconButton
 								v-for="phone in phones"
 								:key="phone.label"
-								:icon="PhoneIcon"
+								:icon="colorMode === 'dark' ? PhoneIcon : PhoneIconDark"
 								icon-alt="Phone"
 								:href="phone.href"
 							>
@@ -241,7 +265,7 @@ const carSpecs = computed(() => [
 	aspect-ratio: 1;
 	border-radius: 50% !important;
 
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--color-secondary-90);
 	font-size: 32px;
 	line-height: 1;
 	cursor: pointer;
@@ -286,7 +310,7 @@ const carSpecs = computed(() => [
 .info text {
 	font-size: 24px;
 	font-weight: 300;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--color-secondary-70);
 }
 
 .info text b {
@@ -294,7 +318,7 @@ const carSpecs = computed(() => [
 }
 
 .info .name, .info .price {
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--color-secondary-90);
 	font-size: 48px;
 }
 
@@ -343,12 +367,12 @@ const carSpecs = computed(() => [
 
 	font-size: 15px;
 	font-weight: 300;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--color-secondary-70);
 
 	b {
 		font-size: 24px;
 		font-weight: 700;
-		color: rgba(255, 255, 255, 0.9);
+		color: var(--color-secondary-90);
 	}
 }
 

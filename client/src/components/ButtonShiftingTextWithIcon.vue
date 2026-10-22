@@ -49,7 +49,7 @@ const element = computed(() => props.href ? "a" : "button")
 
     font-size: 16px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-secondary-70);
     text-decoration: none;
     cursor: pointer;
 
@@ -74,7 +74,7 @@ const element = computed(() => props.href ? "a" : "button")
 }
 
 .button-shifting-text-with-icon:hover > span {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-secondary-90);
     transform: translateY(-2px);
 }
 

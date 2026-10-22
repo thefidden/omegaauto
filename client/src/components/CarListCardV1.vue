@@ -142,17 +142,17 @@ const getBrandLogoHref = (brand: string): string => {
 .value {
 	font-size: 24px;
 	font-weight: 300;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--color-secondary-70);
 }
 
 .label {
 	font-size: 24px;
 	font-weight: 700;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--color-secondary-70);
 }
 
 .name {
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--color-secondary-90);
 }
 
 @media (max-width: 1250px) {
@@ -189,7 +189,7 @@ const getBrandLogoHref = (brand: string): string => {
 		height: auto;
 		padding: 16px;
 		gap: 18px;
-		background-color: rgba(8, 8, 12, 0.24);
+		background-color: var(--color-primary-20);
 	}
 
 	.image-frame {

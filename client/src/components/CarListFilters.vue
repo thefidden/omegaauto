@@ -7,9 +7,18 @@ import { computed, ref } from "vue";
 import BlockGlassSelect from "./BlockGlassSelect.vue";
 import BlockGlassInput from "./BlockGlassInput.vue";
 import TextIconButton from "./TextIconButton.vue";
-import TickIcon from "../assets/tick.svg"
-import CrossIcon from "../assets/cross.svg"
 import { type CarListOrdering, useCarListFilters } from "../stores/CarListFiltersStore.ts";
+import { useColorMode } from "@vueuse/core";
+
+import TickIcon from "../assets/svg-light/tick.svg"
+import CrossIcon from "../assets/svg-light/cross.svg"
+
+import TickIconDark from "../assets/svg-dark/tick.svg"
+import CrossIconDark from "../assets/svg-dark/cross.svg"
+
+const colorMode = useColorMode({
+	modes: { dark: 'dark', light: 'light' }
+})
 
 const emit = defineEmits<{
 	applied: []
@@ -260,14 +269,18 @@ const getOrderingNameByValue = (orderingValue: CarListOrdering) =>
 			</div>
 
 			<div class="car-list-filters__actions">
-				<TextIconButton :icon="TickIcon" class="car-list-filters__apply"
-								@click="applyFilters"
+				<TextIconButton
+					:icon="colorMode === 'dark' ? TickIcon : TickIconDark"
+					class="car-list-filters__apply"
+					@click="applyFilters"
 				>
 					Применить
 				</TextIconButton>
 
-				<TextIconButton :icon="CrossIcon" class="car-list-filters__flush"
-								@click="filters.reset()"
+				<TextIconButton
+					:icon="colorMode === 'dark' ? CrossIcon : CrossIconDark"
+					class="car-list-filters__flush"
+					@click="filters.reset()"
 				>
 					Сбросить
 				</TextIconButton>
@@ -293,7 +306,7 @@ const getOrderingNameByValue = (orderingValue: CarListOrdering) =>
 }
 
 h1 {
-	color: white;
+	color: var(--color-secondary);
 	font-weight: bold;
 	user-select: none;
 }
@@ -345,11 +358,6 @@ form > div {
 	width: auto;
 	height: 22px;
 	object-fit: contain;
-}
-
-.car-list-filters :deep(.block-glass::after),
-.car-list-filters :deep(.block-glass-button::after) {
-	box-shadow: 0 0 5px 0 rgba(222, 220, 228, 0.1);
 }
 
 @media (max-width: 900px) {

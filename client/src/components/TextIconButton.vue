@@ -78,7 +78,7 @@ const element = computed(() => props.href ? "a" : "button")
 }
 
 .text-icon-button:hover span {
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--color-secondary-90);
 	transform: translateY(-10%);
 }
 

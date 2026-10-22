@@ -3,11 +3,18 @@
 import BlockGlass from "../BlockGlass.vue";
 import { computed, ref } from "vue";
 import BlockGlassButton from "../BlockGlassButton.vue";
-import Arrow from "../../assets/arrow.svg"
 import { storeToRefs } from "pinia";
 import { useStore } from "../../stores/Store.ts";
 import LoadingAnimation from "../LoadingAnimation.vue";
 import { useCarListFilters } from "../../stores/CarListFiltersStore.ts";
+import { useColorMode } from "@vueuse/core";
+
+import Arrow from "../../assets/svg-light/arrow.svg"
+import ArrowDark from "../../assets/svg-dark/arrow.svg"
+
+const colorMode = useColorMode({
+	modes: { dark: 'dark', light: 'light' }
+})
 
 const store = useStore()
 const { brands, brandsLoading } = storeToRefs(store)
@@ -21,7 +28,12 @@ const brandListPages = computed(() => Math.floor(brands.value.length / brandsPer
 
 const getBrandLogoHref = (brand: string): string => {
 	const extension = brand.toLowerCase() === "great wall" ? "png" : "svg"
-	return new URL(`../../assets/car-logos/${ brand.toLowerCase() }.${ extension }`, import.meta.url).href
+	return new URL(
+		colorMode.value === 'dark'
+			? `../../assets/car-logos-light/${ brand.toLowerCase() }.${ extension }`
+			: `../../assets/car-logos-dark/${ brand.toLowerCase() }.${ extension }`,
+		import.meta.url
+	).href
 }
 
 const goToBrand = (brand: string) => {
@@ -33,7 +45,7 @@ const goToBrand = (brand: string) => {
 
 <template>
 	<div class="sector4">
-		<block-glass class="cell heading" style="--background-color: var(--color-secondary-20)">
+		<block-glass class="cell heading">
 			Выберите марку автомобиля
 		</block-glass>
 
@@ -73,7 +85,7 @@ const goToBrand = (brand: string) => {
 											cursor: brandListPage === 0  ? 'auto' : 'pointer'
 										}"
 					>
-						<img :src="Arrow" alt="Arrow" />
+						<img :src="colorMode === 'dark' ? Arrow : ArrowDark" alt="Arrow" />
 					</block-glass-button>
 
 					<block-glass class="page">
@@ -88,7 +100,7 @@ const goToBrand = (brand: string) => {
 											cursor: brandListPage === brandListPages - 1  ? 'auto' : 'pointer'
 										}"
 					>
-						<img :src="Arrow" alt="Arrow" />
+						<img :src="colorMode === 'dark' ? Arrow : ArrowDark" alt="Arrow" />
 					</block-glass-button>
 				</div>
 			</template>
@@ -160,7 +172,7 @@ const goToBrand = (brand: string) => {
 	box-sizing: border-box;
 	padding: 30px;
 
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--color-secondary-90);
 	font-size: 24px;
 	font-weight: 700;
 }

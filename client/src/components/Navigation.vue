@@ -6,6 +6,7 @@ import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useStore } from "../stores/Store.ts";
 import ButtonShiftingTextWithIcon from "./ButtonShiftingTextWithIcon.vue";
+import { navigateToHash } from "../utils/navigateToHash.ts";
 
 const route = useRoute()
 const router = useRouter()
@@ -33,7 +34,7 @@ const pageList = computed(() => {
 			title: 'Все бренды',
 			href: '/#brand-selection',
 			ascendant: 'main',
-			action: () => router.push({ name: 'main', hash: '#brand-selection' })
+			action: () => navigateToHash(router, '#brand-selection')
 		},
 		'car-list': {
 			title: `Список автомобилей`,
@@ -136,11 +137,11 @@ nav::-webkit-scrollbar { display: none; }
 }
 
 .footer-page:nth-last-child(1) {
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--color-secondary-90);
 }
 
 @media (max-width: 1240px) {
-	.footer { background-color: rgba(8, 8, 12, 0.32) !important; }
+	.footer { background-color: var(--color-primary-30) !important; }
 }
 
 @media (max-width: 900px) {
@@ -152,7 +153,7 @@ nav::-webkit-scrollbar { display: none; }
 		min-height: 52px;
 		margin: 24px 16px max(16px, env(safe-area-inset-bottom));
 		padding: 6px 10px;
-		background-color: rgba(8, 8, 12, 0.38) !important;
+		background-color: var(--color-primary-40) !important;
 	}
 
 	.footer.above-pagination {

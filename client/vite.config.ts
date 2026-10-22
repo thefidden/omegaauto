@@ -10,7 +10,7 @@ export default defineConfig({
             apply: 'build',
             autoExcludeNodeModules: true,
             options: {
-                compact: false,
+                compact: true,
                 controlFlowFlattening: true,
                 controlFlowFlatteningThreshold: 0.75,
                 deadCodeInjection: true,

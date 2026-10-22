@@ -1,10 +1,10 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, AllowAny
-from rest_framework.serializers import ModelSerializer
 
 from cars.filters import ModelFilter
 from cars.models import Model
+from cars.serializers import ModelSerializer
 
 
 class ModelViewSet(viewsets.ModelViewSet):

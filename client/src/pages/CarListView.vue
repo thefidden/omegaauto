@@ -4,8 +4,6 @@ import BlockGlass from "../components/BlockGlass.vue";
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import Arrow from "../assets/arrow.svg";
-import FilterIcon from "../assets/filter.svg";
 import BlockGlassButton from "../components/BlockGlassButton.vue";
 import LoadingAnimation from "../components/LoadingAnimation.vue";
 import { useStore } from "../stores/Store.ts";
@@ -13,6 +11,18 @@ import { useCarListFilters } from "../stores/CarListFiltersStore.ts";
 import TextIconButton from "../components/TextIconButton.vue";
 import CarListFilters from "../components/CarListFilters.vue";
 import CarListCardV2 from "../components/CarListCardV2.vue";
+import { useColorMode } from "@vueuse/core";
+import { navigateToHash } from "../utils/navigateToHash.ts";
+
+import Arrow from "../assets/svg-light/arrow.svg";
+import FilterIcon from "../assets/svg-light/filter.svg";
+
+import ArrowDark from "../assets/svg-dark/arrow.svg";
+import FilterIconDark from "../assets/svg-dark/filter.svg";
+
+const colorMode = useColorMode({
+	modes: { dark: 'dark', light: 'light' }
+})
 
 const router = useRouter()
 const route = useRoute()
@@ -37,7 +47,7 @@ const syncMobile = () => {
 	if (!isMobile.value) filtersOpen.value = false
 }
 
-const goBack = () => router.push({ name: 'main', hash: '#brand-selection' })
+const goBack = () => navigateToHash(router, '#brand-selection')
 const goToCar = (id: string) => router.push({ name: 'car', params: { id } })
 const goToPage = (page: number) => {
 	if (page < 1 || page > carListPages.value || page === filters.page) return
@@ -47,12 +57,21 @@ const goToPage = (page: number) => {
 const onNavigationAnimationEnd = () => {
 	navigationAnimating.value = false
 }
-const openFilters = () => { filtersOpen.value = true }
-const closeFilters = () => { filtersOpen.value = false }
+const openFilters = () => {
+	filtersOpen.value = true
+}
+const closeFilters = () => {
+	filtersOpen.value = false
+}
 
 const getBrandLogoHref = (): string => {
 	const extension = brand.value?.toLowerCase() === "great wall" ? "png" : "svg"
-	return new URL(`../assets/car-logos/${ brand.value?.toLowerCase() }.${ extension }`, import.meta.url).href
+	return new URL(
+		colorMode.value === 'dark'
+			? `../assets/car-logos-light/${ brand.value?.toLowerCase() }.${ extension }`
+			: `../assets/car-logos-dark/${ brand.value?.toLowerCase() }.${ extension }`,
+		import.meta.url
+	).href
 }
 
 watch(() => route.query, () => {
@@ -75,20 +94,25 @@ onUnmounted(() => {
 	<div class="carListPage">
 		<block-glass v-if="brand"
 					 class="cell heading cell-heading-animation"
-					 style="--background-color: var(--color-secondary-7)">
+		>
 			<span class="heading__title"><b>Автомобили {{ brand }}</b></span>
 			<img class="heading__logo" :src="getBrandLogoHref()" :alt="`${brand} logo`" />
 		</block-glass>
 
 		<div class="car-list__actions">
-			<TextIconButton class="button__go-back" :icon="Arrow" icon-alt="Назад" @click="goBack()">
+			<TextIconButton
+				class="button__go-back"
+				:icon="colorMode === 'dark' ? Arrow : ArrowDark"
+				icon-alt="Назад"
+				@click="goBack()"
+			>
 				К выбору марки
 			</TextIconButton>
 
 			<TextIconButton
 				v-if="isMobile"
 				class="button__filters"
-				:icon="FilterIcon"
+				:icon="colorMode === 'dark' ? FilterIcon : FilterIconDark"
 				icon-alt="Фильтры"
 				@click="openFilters"
 			>
@@ -149,7 +173,7 @@ onUnmounted(() => {
 								opacity: filters.page <= 1 ? '.5' : '1'
 							}"
 		>
-			<img :src="Arrow" alt="Arrow" />
+			<img :src="colorMode === 'dark' ? Arrow : ArrowDark" alt="Arrow" />
 		</block-glass-button>
 
 		<block-glass class="page">
@@ -164,7 +188,7 @@ onUnmounted(() => {
 								opacity: filters.page >= carListPages ? '.5' : '1'
 							}"
 		>
-			<img :src="Arrow" alt="Arrow" />
+			<img :src="colorMode === 'dark' ? Arrow : ArrowDark" alt="Arrow" />
 		</block-glass-button>
 	</div>
 
@@ -215,10 +239,7 @@ onUnmounted(() => {
 	max-width: 100%;
 	min-width: 0;
 
-	padding:
-		var(--page-pad-top)
-		var(--page-pad-x)
-		var(--page-pad-bottom);
+	padding: var(--page-pad-top) var(--page-pad-x) var(--page-pad-bottom);
 
 	column-gap: 50px;
 	row-gap: 25px;
@@ -257,7 +278,7 @@ onUnmounted(() => {
 
 	font-size: 32px;
 	font-weight: 400;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--color-secondary-70);
 
 	width: 100%;
 	max-width: 100%;
@@ -274,7 +295,7 @@ onUnmounted(() => {
 }
 
 .heading__title b {
-	color: white;
+	color: var(--color-secondary);
 }
 
 .heading__logo {
@@ -355,7 +376,7 @@ onUnmounted(() => {
 .car-list__navigation .page {
 	font-size: 20px;
 	font-weight: 300;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--color-secondary-70);
 
 	box-sizing: border-box;
 	padding: 0 50px;
@@ -378,12 +399,9 @@ onUnmounted(() => {
 	z-index: 10000;
 
 	box-sizing: border-box;
-	padding: max(16px, env(safe-area-inset-top))
-		max(16px, env(safe-area-inset-right))
-		max(16px, env(safe-area-inset-bottom))
-		max(16px, env(safe-area-inset-left));
+	padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
 
-	background-color: rgba(0, 0, 0, .5);
+	background-color: var(--color-primary-50);
 	backdrop-filter: blur(10px);
 
 	overflow-y: auto;
@@ -422,7 +440,7 @@ onUnmounted(() => {
 	width: 40px;
 	height: 40px;
 
-	color: white;
+	color: var(--color-secondary);
 	background-color: transparent;
 
 	box-sizing: border-box;
@@ -438,7 +456,7 @@ onUnmounted(() => {
 .car-list-filters-modal__close span {
 	position: absolute;
 
-	background-color: white;
+	background-color: var(--color-secondary);
 
 	box-sizing: border-box;
 	border-radius: 2px;
@@ -452,6 +470,7 @@ onUnmounted(() => {
 }
 
 .car-list-filters-modal__close span:first-child { rotate: 45deg; }
+
 .car-list-filters-modal__close span:last-child { rotate: -45deg; }
 
 .car-list-filters-modal-enter-from,
