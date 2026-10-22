@@ -66,7 +66,6 @@ const pageList = computed(() => {
 		<block-glass class="footer"
 					 :class="{ 'above-pagination': route.name === 'car-list' }"
 					 :key="pageList.map(page => page.href).join(' | ')"
-					 style="background-color: var(--color-primary-30)"
 		>
 			<nav aria-label="Навигация по страницам">
 				<button-shifting-text-with-icon
