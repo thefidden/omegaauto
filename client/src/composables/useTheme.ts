@@ -6,6 +6,7 @@ export function useTheme() {
 		attribute: "class",
 		valueDark: "dark",
 		valueLight: "light",
+		initialValue: 'light'
 	})
 	const toggleDark = useToggle(isDark)
 
